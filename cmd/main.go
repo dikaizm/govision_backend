@@ -41,7 +41,7 @@ func main() {
 	appointmentController := controllers.NewAppointmentController(appointmentService)
 	doctorController := controllers.NewDoctorController(doctorService)
 	fundusController := controllers.NewFundusController(fundusService)
-	userController := controllers.NewUserController(userService)
+	userController := controllers.NewUserController(userService, authService)
 
 	router := routes.SetupRouter(env.SecretKey, route_intf.Controllers{
 		Auth:        authController,

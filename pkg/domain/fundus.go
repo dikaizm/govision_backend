@@ -24,11 +24,21 @@ type Fundus struct {
 	PatientID        int64       `gorm:"not null"`
 	Patient          UserPatient `gorm:"foreignKey:PatientID"`
 	ImgURL           string      `gorm:"size:255"`
-	VerifiedBy       uint
-	Verifier         UserDoctor `gorm:"foreignKey:VerifiedBy"`
-	VerifyStatus     string     `gorm:"size:255"`
-	PredictedDisease string     `gorm:"size:20;check:predicted_disease IN ('no_dr','mild_dr','moderate_dr','severe_dr','proliferative_dr', 'not_detected')"`
-	CreatedAt        time.Time  `gorm:"autoCreateTime"`
+	VerifiedBy       int64       `gorm:"null"`
+	Verifier         UserDoctor  `gorm:"foreignKey:VerifiedBy;null"`
+	VerifyStatus     string      `gorm:"size:255"`
+	PredictedDisease string      `gorm:"size:20;check:predicted_disease IN ('no_dr','mild_dr','moderate_dr','severe_dr','proliferative_dr', 'not_detected')"`
+	CreatedAt        time.Time   `gorm:"autoCreateTime"`
+	UpdatedAt        time.Time
+}
+
+type CreateFundus struct {
+	ID               int64     `gorm:"primaryKey"`
+	PatientID        int64     `gorm:"not null"`
+	ImgURL           string    `gorm:"size:255"`
+	VerifyStatus     string    `gorm:"size:255"`
+	PredictedDisease string    `gorm:"size:20;check:predicted_disease IN ('no_dr','mild_dr','moderate_dr','severe_dr','proliferative_dr', 'not_detected')"`
+	CreatedAt        time.Time `gorm:"autoCreateTime"`
 	UpdatedAt        time.Time
 }
 

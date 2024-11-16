@@ -72,6 +72,7 @@ func (u *AuthService) Register(p *request.Register) (*response.Register, error) 
 	}
 
 	return &response.Register{
+		UserID:      user.ID,
 		Name:        p.Name,
 		Email:       p.Email,
 		Role:        p.Role,
@@ -112,6 +113,7 @@ func (u *AuthService) Login(p *request.Login) (*response.Login, error) {
 	}
 
 	return &response.Login{
+		UserID:      user.ID,
 		Name:        user.Name,
 		Email:       user.Email,
 		Role:        user.Role.RoleName,

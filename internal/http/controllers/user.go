@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/dikaizm/govision_backend/internal/dto/request"
 	"github.com/dikaizm/govision_backend/internal/dto/response"
 	controller_intf "github.com/dikaizm/govision_backend/internal/http/controllers/interfaces"
 	"github.com/dikaizm/govision_backend/pkg/helpers"
@@ -11,11 +12,13 @@ import (
 
 type UserController struct {
 	userService service_intf.UserService
+	authService service_intf.AuthService
 }
 
-func NewUserController(userService service_intf.UserService) controller_intf.UserController {
+func NewUserController(userService service_intf.UserService, authService service_intf.AuthService) controller_intf.UserController {
 	return &UserController{
 		userService: userService,
+		authService: authService,
 	}
 }
 
@@ -63,4 +66,36 @@ func (c *UserController) ViewDoctorProfile(w http.ResponseWriter, r *http.Reques
 		Message: "Fetch doctor profile",
 		Data:    profile,
 	}, http.StatusOK)
+}
+
+func (c *UserController) CreatePatientProfile(w http.ResponseWriter, r *http.Request) {
+	req := &request.RegisterPatient{}
+	if err := helpers.JsonBodyDecoder(r.Body, &req); err != nil {
+		helpers.SendResponse(w, response.Response{
+			Status:  "error",
+			Message: "Failed to parse request body",
+			Error:   err.Error(),
+		}, http.StatusBadRequest)
+		return
+	}
+
+	currentUser, err := helpers.GetCurrentUser(r)
+	if err != nil {
+		helpers.FailedGetCurrentUser(w, err)
+		return
+	}
+
+	if err := c.authService.RegisterAsPatient(currentUser.ID, req); err != nil {
+		helpers.SendResponse(w, response.Response{
+			Status:  "error",
+			Message: "Failed to create patient profile",
+			Error:   err.Error(),
+		}, http.StatusBadRequest)
+		return
+	}
+
+	helpers.SendResponse(w, response.Response{
+		Status:  "success",
+		Message: "Patient profile created successfully",
+	}, http.StatusCreated)
 }

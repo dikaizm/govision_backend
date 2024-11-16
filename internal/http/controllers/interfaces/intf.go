@@ -32,6 +32,8 @@ type FundusController interface {
 type UserController interface {
 	ViewPatientProfile(w http.ResponseWriter, r *http.Request)
 	ViewDoctorProfile(w http.ResponseWriter, r *http.Request)
+
+	CreatePatientProfile(w http.ResponseWriter, r *http.Request)
 }
 
 type DoctorController interface {

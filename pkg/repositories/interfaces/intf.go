@@ -15,7 +15,7 @@ type AppointmentRepository interface {
 }
 
 type FundusRepository interface {
-	Create(fundus *domain.Fundus) (*domain.Fundus, error)
+	Create(fundus *domain.CreateFundus) (*domain.Fundus, error)
 	CreateFeedbackByDoctor(fundusID int64, doctorID int64, notes string) error
 	FindAllByPatient(patientID int64) (res []*response.FundusHistory, err error)
 	FindByID(id int64) (*domain.Fundus, error)

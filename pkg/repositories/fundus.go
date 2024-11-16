@@ -15,11 +15,17 @@ func NewDbFundusRepository(db *gorm.DB) repo_intf.FundusRepository {
 	return &DbFundusRepository{DB: db}
 }
 
-func (r *DbFundusRepository) Create(fundus *domain.Fundus) (*domain.Fundus, error) {
-	if err := r.DB.Create(fundus).Error; err != nil {
+func (r *DbFundusRepository) Create(fundus *domain.CreateFundus) (*domain.Fundus, error) {
+	if err := r.DB.Table("fundus").Create(fundus).Error; err != nil {
 		return nil, err
 	}
-	return fundus, nil
+
+	newFundus, err := r.FindByID(fundus.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return newFundus, nil
 }
 
 func (r *DbFundusRepository) CreateFeedbackByDoctor(fundusID int64, doctorID int64, notes string) error {
@@ -45,7 +51,7 @@ func (r *DbFundusRepository) FindAllByPatient(patientID int64) (res []*response.
 
 func (r *DbFundusRepository) FindByID(id int64) (*domain.Fundus, error) {
 	var fundus domain.Fundus
-	err := r.DB.Preload("Feedback").First(&fundus, id).Error
+	err := r.DB.First(&fundus, id).Error
 	if err != nil {
 		return nil, err
 	}

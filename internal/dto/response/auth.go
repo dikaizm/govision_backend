@@ -2,6 +2,7 @@ package response
 
 type (
 	Register struct {
+		UserID      string `json:"user_id"`
 		Name        string `json:"name"`
 		Role        string `json:"role"`
 		Email       string `json:"email"`
@@ -11,6 +12,7 @@ type (
 
 type (
 	Login struct {
+		UserID      string `json:"user_id"`
 		Name        string `json:"name"`
 		Role        string `json:"role"`
 		Email       string `json:"email"`

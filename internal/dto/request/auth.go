@@ -5,26 +5,21 @@ import (
 )
 
 type (
-	RegisterValidate struct {
+	Register struct {
 		Name            string `json:"name" validate:"required,min=3,max=100"`
 		Email           string `json:"email" validate:"required,email"`
 		Password        string `json:"password" validate:"required,min=8,max=100"`
 		ConfirmPassword string `json:"confirm_password" validate:"required,min=8,max=100"`
-	}
 
-	Register struct {
-		Name            string    `json:"name" validate:"required,min=3,max=100"`
-		Email           string    `json:"email" validate:"required,email"`
-		Password        string    `json:"password" validate:"required,min=8,max=100"`
-		ConfirmPassword string    `json:"confirm_password" validate:"required,min=8,max=100"`
-		Role            string    `json:"role" validate:"required"`
-		RoleID          int       `json:"role_id" validate:"required"`
-		Phone           string    `json:"phone" validate:"required,e164"`
-		BirthDate       time.Time `json:"birth_date" validate:"required"`
-		Gender          string    `json:"gender" validate:"required"`
+		Phone     string    `json:"phone" validate:"required,e164"`
+		BirthDate time.Time `json:"birth_date" validate:"required"`
+		Gender    string    `json:"gender" validate:"required"`
 
-		Village       string `json:"village" validate:"required"`
-		Subdistrict   string `json:"subdistrict" validate:"required"`
+		Role   string `json:"role" validate:"required"`
+		RoleID int    `json:"role_id" validate:"required"`
+
+		Village       string `json:"village"`
+		Subdistrict   string `json:"subdistrict"`
 		City          string `json:"city" validate:"required"`
 		Province      string `json:"province" validate:"required"`
 		AddressDetail string `json:"address_detail" validate:"required"`
