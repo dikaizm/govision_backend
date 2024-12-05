@@ -9,12 +9,6 @@ type AuthController interface {
 	Login(w http.ResponseWriter, r *http.Request)
 }
 
-type HealthFacilityController interface {
-	CreateAdaptorSchedule(w http.ResponseWriter, r *http.Request)
-	ViewAllFacility(w http.ResponseWriter, r *http.Request)
-	ViewAllLensAdaptorByFacility(w http.ResponseWriter, r *http.Request)
-}
-
 type AppointmentController interface {
 	Create(w http.ResponseWriter, r *http.Request)
 	ViewAll(w http.ResponseWriter, r *http.Request)
@@ -38,6 +32,8 @@ type UserController interface {
 
 type DoctorController interface {
 	ViewAll(w http.ResponseWriter, r *http.Request)
+	View(w http.ResponseWriter, r *http.Request)
 	Profile(w http.ResponseWriter, r *http.Request)
 	CreateSchedule(w http.ResponseWriter, r *http.Request)
+	GetTimeSlots(w http.ResponseWriter, r *http.Request)
 }

@@ -7,9 +7,9 @@ import (
 )
 
 type AppointmentRepository interface {
-	Create(apt *domain.Appointment) error
+	Create(apt *domain.Appointment) (*domain.Appointment, error)
 	FindAllByDoctor(doctorID int64) ([]*domain.Appointment, error)
-	FindAllByPatient(patientID int64) ([]*domain.Appointment, error)
+	FindAllByPatient(patientID int64, filter *request.FilterViewAllAppointment) ([]*domain.Appointment, error)
 	UpdateStatus(id int64, status string) error
 	Delete(id int64) error
 }
@@ -32,16 +32,17 @@ type UserRepository interface {
 	FindByEmail(string) (*domain.User, error)
 	GetAllRole() ([]*domain.UserRole, error)
 
-	CreateDoctorProfile(profile *domain.UserDoctor, practices []*domain.DoctorPractice, educations []*domain.DoctorEducation) (*string, error)
+	CreateDoctorProfile(profile *domain.UserDoctor, practices []*domain.DoctorExperience, educations []*domain.DoctorEducation) (*string, error)
 	CreatePatientProfile(profile *domain.UserPatient) (*string, error)
 }
 
 type DoctorRepository interface {
-	CreateProfile(profile *domain.UserDoctor, practices []*domain.DoctorPractice, educations []*domain.DoctorEducation) (*int64, error)
+	CreateProfile(profile *domain.UserDoctor, practices []*domain.DoctorExperience, educations []*domain.DoctorEducation) (*int64, error)
 	FindAll(filter *request.FilterAppointmentSchedule) ([]*domain.UserDoctor, error)
-	FindProfileByUserID(userID int64) (*int64, error)
-	GetProfileByID(profileID int64) (*domain.UserDoctor, error)
-	GetPractice(profileID int64) ([]*domain.DoctorPractice, error)
+	FindProfileByUserID(userID string) (*domain.UserDoctor, error)
+	GetPractice(profileID int64) ([]*domain.DoctorExperience, error)
 	GetSchedule(profileID int64) ([]*domain.DoctorSchedule, error)
 	CreateSchedule(schedules []*domain.DoctorSchedule) error
+	FindTimeSlotsByProfileIDAndDate(profileID int64, date string) ([]*domain.DoctorScheduleTimeSlot, error)
+	UpdateTimeSlotToBooked(timeSlotID int64) error
 }

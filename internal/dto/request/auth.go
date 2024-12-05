@@ -1,7 +1,7 @@
 package request
 
 import (
-	"time"
+	"github.com/dikaizm/govision_backend/pkg/helpers/dtype"
 )
 
 type (
@@ -11,9 +11,9 @@ type (
 		Password        string `json:"password" validate:"required,min=8,max=100"`
 		ConfirmPassword string `json:"confirm_password" validate:"required,min=8,max=100"`
 
-		Phone     string    `json:"phone" validate:"required,e164"`
-		BirthDate time.Time `json:"birth_date" validate:"required"`
-		Gender    string    `json:"gender" validate:"required"`
+		Phone     string     `json:"phone" validate:"required,e164"`
+		BirthDate dtype.Date `json:"birth_date" validate:"required"`
+		Gender    string     `json:"gender" validate:"required"`
 
 		Role   string `json:"role" validate:"required"`
 		RoleID int    `json:"role_id" validate:"required"`
@@ -35,12 +35,12 @@ type (
 	}
 
 	DoctorPractice struct {
-		OfficeName    string    `json:"office_name" validate:"required,min=3,max=100"`
-		City          string    `json:"city" validate:"required,min=3,max=100"`
-		Province      string    `json:"province" validate:"required,min=3,max=100"`
-		AddressDetail string    `json:"address_detail" validate:"required,min=3,max=255"`
-		StartDate     time.Time `json:"start_date" validate:"required"`
-		EndDate       time.Time `json:"end_date" validate:"required"`
+		InstitutionName string     `json:"institution_name" validate:"required,min=3,max=100"`
+		City            string     `json:"city" validate:"required,min=3,max=100"`
+		Province        string     `json:"province" validate:"required,min=3,max=100"`
+		AddressDetail   string     `json:"address_detail" validate:"required,min=3,max=255"`
+		StartDate       dtype.Date `json:"start_date" validate:"required"`
+		EndDate         dtype.Date `json:"end_date" validate:"required"`
 	}
 
 	RegisterDoctor struct {
@@ -55,9 +55,9 @@ type (
 
 type (
 	RegisterPatient struct {
-		DiabetesHistory bool      `json:"diabetes_history" validate:"required"`
-		DiabetesType    string    `json:"diabetes_type" validate:"required"`
-		DiagnosisDate   time.Time `json:"diagnosis_date" validate:"required"`
+		DiabetesHistory bool       `json:"diabetes_history" validate:"required"`
+		DiabetesType    string     `json:"diabetes_type" validate:"required"`
+		DiagnosisDate   dtype.Date `json:"diagnosis_date" validate:"required"`
 	}
 )
 

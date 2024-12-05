@@ -15,7 +15,7 @@ func AppointmentRoutes(router *mux.Router, controller route_intf.Controllers, se
 		@method GET
 	*/
 	router.Handle(
-		"/appointment",
+		"/appointments",
 		middleware.Authentication(secretKey, http.HandlerFunc(controller.Appointment.ViewAll)),
 	).Methods("GET")
 
@@ -23,10 +23,9 @@ func AppointmentRoutes(router *mux.Router, controller route_intf.Controllers, se
 		@desc Create appointment
 		@route /appointment
 		@method POST
-		@body { "doctor_id", "date", "start_hour", "end_hour" }
 	*/
 	router.Handle(
-		"/appointment",
+		"/appointments",
 		middleware.Authentication(secretKey, http.HandlerFunc(controller.Appointment.Create)),
 	).Methods("POST")
 
@@ -37,7 +36,7 @@ func AppointmentRoutes(router *mux.Router, controller route_intf.Controllers, se
 		@body { "confirm" }
 	*/
 	router.Handle(
-		"/appointment/confirm/{apt_id}",
+		"/appointments/confirm/{apt_id}",
 		middleware.Authentication(secretKey, http.HandlerFunc(controller.Appointment.Confirm)),
 	).Methods("POST")
 }

@@ -4,24 +4,14 @@ import (
 	"time"
 )
 
-const (
-	AppointmentStatusPending     = "pending"
-	AppointmentStatusAccepted    = "accepted"
-	AppointmentStatusRejected    = "rejected"
-	AppointmentStatusCanceled    = "canceled"
-	AppointmentStatusRescheduled = "rescheduled"
-)
-
 type Appointment struct {
-	ID        int64       `gorm:"primaryKey"`
-	PatientID int64       `gorm:"not null"`
-	Patient   UserPatient `gorm:"foreignKey:PatientID"`
-	DoctorID  int64       `gorm:"not null"`
-	Doctor    UserDoctor  `gorm:"foreignKey:DoctorID"`
-	Date      time.Time
-	StartHour time.Time
-	EndHour   time.Time
-	Status    string `gorm:"size:20;check:status IN ('pending','accepted','rejected','canceled','rescheduled')"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID         int64                  `gorm:"primaryKey"`
+	PatientID  int64                  `gorm:"not null"`
+	Patient    UserPatient            `gorm:"foreignKey:PatientID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	DoctorID   int64                  `gorm:"not null"`
+	Doctor     UserDoctor             `gorm:"foreignKey:DoctorID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	TimeSlotID int64                  `gorm:"not null;uniqueIndex:idx_appointments_time_slot_id"`
+	TimeSlot   DoctorScheduleTimeSlot `gorm:"foreignKey:TimeSlotID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	CreatedAt  time.Time              `gorm:"autoCreateTime"`
+	UpdatedAt  time.Time              `gorm:"autoUpdateTime"`
 }

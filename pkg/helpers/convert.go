@@ -3,6 +3,8 @@ package helpers
 import (
 	"strconv"
 	"time"
+
+	"github.com/dikaizm/govision_backend/pkg/helpers/dtype"
 )
 
 func StringToInt64(s string) (*int64, error) {
@@ -30,7 +32,7 @@ func GetDaysOfWeek(start, end time.Time) ([]int, error) {
 	return daysOfWeek, nil
 }
 
-func GetWorkYears(start time.Time, end time.Time) int {
+func GetWorkYears(start dtype.Date, end dtype.Date) int {
 	var year, month int
 	year = end.Year() - start.Year()
 	if year <= 1 {

@@ -1,11 +1,8 @@
 package services
 
 import (
-	"errors"
-
 	"github.com/dikaizm/govision_backend/internal/dto/request"
 	"github.com/dikaizm/govision_backend/pkg/domain"
-	"github.com/dikaizm/govision_backend/pkg/helpers"
 	repo_intf "github.com/dikaizm/govision_backend/pkg/repositories/interfaces"
 	service_intf "github.com/dikaizm/govision_backend/pkg/services/interfaces"
 )
@@ -23,12 +20,6 @@ func NewDoctorService(doctorRepo repo_intf.DoctorRepository, userRepo repo_intf.
 }
 
 func (u *DoctorService) FindAll(filter *request.FilterAppointmentSchedule) ([]*domain.UserDoctor, error) {
-	daysOfWeek, err := helpers.GetDaysOfWeek(filter.StartDate, filter.EndDate)
-	if err != nil {
-		return nil, errors.New("failed to get days of week")
-	}
-	filter.DaysInt = daysOfWeek
-
 	doctors, err := u.doctorRepo.FindAll(filter)
 	if err != nil {
 		return nil, err
@@ -37,8 +28,8 @@ func (u *DoctorService) FindAll(filter *request.FilterAppointmentSchedule) ([]*d
 	return doctors, nil
 }
 
-func (u *DoctorService) GetProfile(doctorID int64) (*domain.UserDoctor, error) {
-	doctor, err := u.doctorRepo.GetProfileByID(doctorID)
+func (u *DoctorService) GetProfile(userID string) (*domain.UserDoctor, error) {
+	doctor, err := u.doctorRepo.FindProfileByUserID(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -49,19 +40,9 @@ func (u *DoctorService) GetProfile(doctorID int64) (*domain.UserDoctor, error) {
 func (u *DoctorService) CreateSchedule(userID string, params []*request.CreateDoctorSchedule) error {
 	var schedules []*domain.DoctorSchedule
 
-	doctor, err := u.userRepo.FindDoctorProfileByID(userID)
+	_, err := u.userRepo.FindDoctorProfileByID(userID)
 	if err != nil {
 		return err
-	}
-
-	for _, p := range params {
-		schedule := &domain.DoctorSchedule{
-			ProfileID: doctor.ID,
-			DayOfWeek: p.DayOfWeek,
-			StartHour: p.StartHour,
-			EndHour:   p.EndHour,
-		}
-		schedules = append(schedules, schedule)
 	}
 
 	err = u.doctorRepo.CreateSchedule(schedules)
@@ -70,4 +51,18 @@ func (u *DoctorService) CreateSchedule(userID string, params []*request.CreateDo
 	}
 
 	return nil
+}
+
+func (u *DoctorService) GetTimeSlots(userID string, date string) ([]*domain.DoctorScheduleTimeSlot, error) {
+	profile, err := u.userRepo.FindDoctorProfileByID(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	timeSlots, err := u.doctorRepo.FindTimeSlotsByProfileIDAndDate(profile.ID, date)
+	if err != nil {
+		return nil, err
+	}
+
+	return timeSlots, nil
 }

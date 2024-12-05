@@ -25,15 +25,40 @@ func UserRoutes(router *mux.Router, controller route_intf.Controllers, secretKey
 		middleware.Authentication(secretKey, http.HandlerFunc(controller.User.ViewDoctorProfile)),
 	).Methods("GET")
 
+	// ===================== Doctor =====================
+	// Doctors for appointment booking
+
 	/*
-		@desc Get all doctor profile by patient
+		@desc Get all doctors
 		@route /user/doctor/profile?start_date={start_date}&end_date={end_date}&start_hour={start_hour}&end_hour={end_hour}
 		@method GET
 	*/
 	router.Handle(
-		"/user/doctor/profile",
+		"/user/doctors",
 		middleware.Authentication(secretKey, http.HandlerFunc(controller.Doctor.ViewAll)),
 	).Methods("GET")
+
+	/*
+		@desc Get doctor profile by user id
+		@route /user/doctors/{user_id}
+		@method GET
+	*/
+	router.Handle(
+		"/user/doctors/{user_id}",
+		middleware.Authentication(secretKey, http.HandlerFunc(controller.Doctor.View)),
+	).Methods("GET")
+
+	/*
+		@desc Get doctor time slots by user id and date
+		@route /user/doctors/{user_id}/time-slots/{date}
+		@method GET
+	*/
+	router.Handle(
+		"/user/doctors/{user_id}/time-slots/{date}",
+		middleware.Authentication(secretKey, http.HandlerFunc(controller.Doctor.GetTimeSlots)),
+	).Methods("GET")
+
+	// ===================== End Doctor =====================
 
 	/*
 		@desc Get doctor profile by patient

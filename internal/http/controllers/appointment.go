@@ -27,7 +27,23 @@ func (c *AppointmentController) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := c.aptService.Create(&req); err != nil {
+	// Validate request body
+	if err := validate.Struct(&req); err != nil {
+		helpers.FailedValidation(w, err)
+		return
+	}
+
+	// Get current user
+	currentUser, err := helpers.GetCurrentUser(r)
+	if err != nil {
+		helpers.FailedGetCurrentUser(w, err)
+		return
+	}
+
+	req.PatientUserID = currentUser.ID
+
+	_, err = c.aptService.Create(&req)
+	if err != nil {
 		helpers.SendResponse(w, response.Response{
 			Status: "error",
 			Error:  err.Error(),
@@ -42,13 +58,31 @@ func (c *AppointmentController) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *AppointmentController) ViewAll(w http.ResponseWriter, r *http.Request) {
+	var appointmentResponse []*response.GetAppointment
+
+	// Query params
+	var filter request.FilterViewAllAppointment
+	filter.Range = r.URL.Query().Get("range")
+	if filter.Range != "" {
+		switch filter.Range {
+		case "today", "week", "month":
+		default:
+			helpers.SendResponse(w, response.Response{
+				Status: "error",
+				Error:  "Invalid range query",
+			}, http.StatusBadRequest)
+			return
+		}
+	}
+
+	// Get current user
 	currentUser, err := helpers.GetCurrentUser(r)
 	if err != nil {
 		helpers.FailedGetCurrentUser(w, err)
 		return
 	}
 
-	apts, err := c.aptService.FindAllByPatient(currentUser.ID)
+	apts, err := c.aptService.FindAllByPatient(currentUser.ID, &filter)
 	if err != nil {
 		helpers.SendResponse(w, response.Response{
 			Status: "error",
@@ -57,10 +91,28 @@ func (c *AppointmentController) ViewAll(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	appointmentResponse = make([]*response.GetAppointment, 0)
+
+	for _, apt := range apts {
+		appointmentResponse = append(appointmentResponse, &response.GetAppointment{
+			ID:                   apt.ID,
+			DoctorUserID:         apt.Doctor.UserID,
+			DoctorName:           apt.Doctor.User.Name,
+			DoctorSpecialization: apt.Doctor.Specialization,
+			DoctorPhotoURL:       apt.Doctor.User.Photo,
+
+			Date:      apt.TimeSlot.Schedule.Date,
+			StartTime: apt.TimeSlot.StartTime,
+			EndTime:   apt.TimeSlot.EndTime,
+
+			Location: apt.Doctor.Institution,
+		})
+	}
+
 	helpers.SendResponse(w, response.Response{
 		Status:  "success",
 		Message: "Get appointments success",
-		Data:    apts,
+		Data:    appointmentResponse,
 	}, http.StatusOK)
 }
 

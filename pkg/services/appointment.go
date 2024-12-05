@@ -8,31 +8,47 @@ import (
 )
 
 type AppointmentService struct {
-	aptRepo  repo_intf.AppointmentRepository
-	userRepo repo_intf.UserRepository
+	aptRepo    repo_intf.AppointmentRepository
+	userRepo   repo_intf.UserRepository
+	doctorRepo repo_intf.DoctorRepository
 }
 
-func NewAppointmentService(aptRepo repo_intf.AppointmentRepository, userRepo repo_intf.UserRepository) service_intf.AppointmentService {
+func NewAppointmentService(aptRepo repo_intf.AppointmentRepository, userRepo repo_intf.UserRepository, doctorRepo repo_intf.DoctorRepository) service_intf.AppointmentService {
 	return &AppointmentService{
-		aptRepo:  aptRepo,
-		userRepo: userRepo,
+		aptRepo:    aptRepo,
+		userRepo:   userRepo,
+		doctorRepo: doctorRepo,
 	}
 }
 
-func (u *AppointmentService) Create(p *request.CreateAppointment) error {
-	apt := &domain.Appointment{
-		PatientID: p.PatientID,
-		DoctorID:  p.DoctorID,
-		Date:      p.Date,
-		StartHour: p.StartHour,
-		EndHour:   p.EndHour,
-		Status:    "pending",
-	}
-	if err := u.aptRepo.Create(apt); err != nil {
-		return err
+func (u *AppointmentService) Create(p *request.CreateAppointment) (*domain.Appointment, error) {
+	doctor, err := u.userRepo.FindDoctorProfileByID(p.DoctorUserID)
+	if err != nil {
+		return nil, err
 	}
 
-	return nil
+	patient, err := u.userRepo.FindPatientProfileByID(p.PatientUserID)
+	if err != nil {
+		return nil, err
+	}
+
+	apt := &domain.Appointment{
+		PatientID:  patient.ID,
+		DoctorID:   doctor.ID,
+		TimeSlotID: p.TimeSlotID,
+	}
+
+	newApt, err := u.aptRepo.Create(apt)
+	if err != nil {
+		return nil, err
+	}
+
+	// Change time slot status to booked
+	if err := u.doctorRepo.UpdateTimeSlotToBooked(p.TimeSlotID); err != nil {
+		return nil, err
+	}
+
+	return newApt, nil
 }
 
 func (u *AppointmentService) FindAllByDoctor(userID string) ([]*domain.Appointment, error) {
@@ -49,13 +65,13 @@ func (u *AppointmentService) FindAllByDoctor(userID string) ([]*domain.Appointme
 	return appointments, nil
 }
 
-func (u *AppointmentService) FindAllByPatient(userID string) ([]*domain.Appointment, error) {
+func (u *AppointmentService) FindAllByPatient(userID string, filter *request.FilterViewAllAppointment) ([]*domain.Appointment, error) {
 	patient, err := u.userRepo.FindPatientProfileByID(userID)
 	if err != nil {
 		return nil, err
 	}
 
-	appointments, err := u.aptRepo.FindAllByPatient(patient.ID)
+	appointments, err := u.aptRepo.FindAllByPatient(patient.ID, filter)
 	if err != nil {
 		return nil, err
 	}

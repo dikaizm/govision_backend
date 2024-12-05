@@ -131,16 +131,16 @@ func (u *AuthService) RegisterAsDoctor(userID string, p *request.RegisterDoctor)
 		Rating:         0,
 	}
 
-	practices := []*domain.DoctorPractice{}
+	practices := []*domain.DoctorExperience{}
 	for _, pr := range p.Practices {
 		workYears := helpers.GetWorkYears(pr.StartDate, pr.EndDate)
 
-		practice := &domain.DoctorPractice{
-			City:       pr.City,
-			Province:   pr.Province,
-			OfficeName: pr.OfficeName,
-			StartDate:  pr.StartDate,
-			EndDate:    pr.EndDate,
+		practice := &domain.DoctorExperience{
+			City:            pr.City,
+			Province:        pr.Province,
+			InstitutionName: pr.InstitutionName,
+			StartDate:       pr.StartDate,
+			EndDate:         pr.EndDate,
 		}
 		practices = append(practices, practice)
 		profile.WorkYears += workYears

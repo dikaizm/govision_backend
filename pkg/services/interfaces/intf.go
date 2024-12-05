@@ -15,9 +15,9 @@ type AuthService interface {
 }
 
 type AppointmentService interface {
-	Create(p *request.CreateAppointment) error
+	Create(p *request.CreateAppointment) (*domain.Appointment, error)
 	FindAllByDoctor(userID string) ([]*domain.Appointment, error)
-	FindAllByPatient(userID string) ([]*domain.Appointment, error)
+	FindAllByPatient(userID string, filter *request.FilterViewAllAppointment) ([]*domain.Appointment, error)
 	UpdateStatus(aptID int64, confirm bool) error
 }
 
@@ -38,6 +38,7 @@ type UserService interface {
 
 type DoctorService interface {
 	FindAll(filter *request.FilterAppointmentSchedule) ([]*domain.UserDoctor, error)
-	GetProfile(profileID int64) (*domain.UserDoctor, error)
+	GetProfile(userID string) (*domain.UserDoctor, error)
 	CreateSchedule(userID string, params []*request.CreateDoctorSchedule) error
+	GetTimeSlots(userID string, date string) ([]*domain.DoctorScheduleTimeSlot, error)
 }

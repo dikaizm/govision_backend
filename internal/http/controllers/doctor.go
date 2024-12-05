@@ -22,6 +22,8 @@ func NewDoctorController(doctorService service_intf.DoctorService) controller_in
 }
 
 func (c *DoctorController) ViewAll(w http.ResponseWriter, r *http.Request) {
+	var doctorResponse []*response.GetDoctorProfilePreview
+
 	var filterQuery map[string]string
 	if err := helpers.QueryDecoder(r, &filterQuery); err != nil {
 		helpers.FailedParsingQuery(w, err)
@@ -43,21 +45,104 @@ func (c *DoctorController) ViewAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	for _, doctor := range doctors {
+		doctorResponse = append(doctorResponse, &response.GetDoctorProfilePreview{
+			UserID:         doctor.UserID,
+			Name:           doctor.User.Name,
+			Specialization: doctor.Specialization,
+			Rating:         doctor.Rating,
+			WorkYears:      doctor.WorkYears,
+			City:           doctor.City,
+			Province:       doctor.Province,
+			Photo:          doctor.User.Photo,
+		})
+	}
+
 	helpers.SendResponse(w, response.Response{
 		Status:  "success",
 		Message: "Fetch all doctors",
-		Data:    doctors,
+		Data:    doctorResponse,
+	}, http.StatusOK)
+}
+
+func (c *DoctorController) View(w http.ResponseWriter, r *http.Request) {
+	var doctorResponse *response.GetDoctorProfile
+
+	profileID := helpers.UrlVars(r, "user_id")
+
+	if profileID == "" {
+		helpers.SendResponse(w, response.Response{
+			Status: "error",
+			Error:  "User ID is required",
+		}, http.StatusBadRequest)
+		return
+	}
+
+	doctor, err := c.doctorService.GetProfile(profileID)
+	if err != nil {
+		helpers.SendResponse(w, response.Response{
+			Status: "error",
+			Error:  err.Error(),
+		}, http.StatusInternalServerError)
+		return
+	}
+
+	doctorResponse = &response.GetDoctorProfile{
+		UserID:         doctor.UserID,
+		Name:           doctor.User.Name,
+		StrNo:          doctor.StrNo,
+		Photo:          doctor.User.Photo,
+		Specialization: doctor.Specialization,
+		Institution:    doctor.Institution,
+		City:           doctor.City,
+		Province:       doctor.Province,
+		Rating:         doctor.Rating,
+		TotalPatient:   doctor.TotalPatient,
+		WorkYears:      doctor.WorkYears,
+		BioDesc:        doctor.BioDesc,
+		Experiences:    []response.DoctorExperience{},
+		Educations:     []response.DoctorEducation{},
+		Schedules:      []response.DoctorSchedule{},
+	}
+
+	if doctor.Experiences != nil {
+		for _, exp := range doctor.Experiences {
+			doctorResponse.Experiences = append(doctorResponse.Experiences, response.DoctorExperience{
+				Institution: exp.InstitutionName,
+				StartDate:   exp.StartDate,
+				EndDate:     exp.EndDate,
+			})
+		}
+	}
+	if doctor.Educations != nil {
+		for _, edu := range doctor.Educations {
+			doctorResponse.Educations = append(doctorResponse.Educations, response.DoctorEducation{
+				University: edu.University,
+				Major:      edu.Major,
+				StartYear:  edu.StartYear,
+				EndYear:    edu.EndYear,
+			})
+		}
+	}
+	if doctor.Schedules != nil {
+		for _, sch := range doctor.Schedules {
+			doctorResponse.Schedules = append(doctorResponse.Schedules, response.DoctorSchedule{
+				Date: sch.Date,
+			})
+		}
+	}
+
+	helpers.SendResponse(w, response.Response{
+		Status:  "success",
+		Message: "Fetch doctor profile success",
+		Data:    doctorResponse,
 	}, http.StatusOK)
 }
 
 func (c *DoctorController) Profile(w http.ResponseWriter, r *http.Request) {
-	doctorID, err := helpers.StringToInt64(helpers.UrlVars(r, "id"))
-	if err != nil {
-		helpers.FailedGetUrlVars(w, err, nil)
-		return
-	}
+	userID := helpers.UrlVars(r, "user_id")
 
-	doctor, err := c.doctorService.GetProfile(*doctorID)
+	doctor, err := c.doctorService.GetProfile(userID)
 	if err != nil {
 		helpers.SendResponse(w, response.Response{
 			Status: "error",
@@ -105,4 +190,37 @@ func (c *DoctorController) CreateSchedule(w http.ResponseWriter, r *http.Request
 		Status:  "success",
 		Message: "Schedule created",
 	}, http.StatusCreated)
+}
+
+func (c *DoctorController) GetTimeSlots(w http.ResponseWriter, r *http.Request) {
+	var timeSlotsResponse []response.GetDoctorTimeSlot
+
+	userID := helpers.UrlVars(r, "user_id")
+	date := helpers.UrlVars(r, "date")
+
+	timeSlots, err := c.doctorService.GetTimeSlots(userID, date)
+	if err != nil {
+		helpers.SendResponse(w, response.Response{
+			Status: "error",
+			Error:  err.Error(),
+		}, http.StatusInternalServerError)
+		return
+	}
+
+	timeSlotsResponse = []response.GetDoctorTimeSlot{}
+
+	for _, ts := range timeSlots {
+		timeSlotsResponse = append(timeSlotsResponse, response.GetDoctorTimeSlot{
+			ID:        ts.ID,
+			StartTime: ts.StartTime,
+			EndTime:   ts.EndTime,
+			IsBooked:  ts.IsBooked,
+		})
+	}
+
+	helpers.SendResponse(w, response.Response{
+		Status:  "success",
+		Message: "Fetch time slots success",
+		Data:    timeSlotsResponse,
+	}, http.StatusOK)
 }

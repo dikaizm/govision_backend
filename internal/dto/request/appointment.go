@@ -1,14 +1,17 @@
 package request
 
-import "time"
+import (
+	"time"
+
+	"github.com/dikaizm/govision_backend/pkg/helpers/dtype"
+)
 
 type (
 	CreateAppointment struct {
-		PatientID int64     `json:"patient_id" validate:"required"`
-		DoctorID  int64     `json:"doctor_id" validate:"required"`
-		Date      time.Time `json:"date" validate:"required"`
-		StartHour time.Time `json:"start_hour" validate:"required"`
-		EndHour   time.Time `json:"end_hour" validate:"required"`
+		PatientUserID string
+		DoctorUserID  string     `json:"doctor_user_id" validate:"required"`
+		Date          dtype.Date `json:"date" validate:"required"`
+		TimeSlotID    int64      `json:"time_slot_id" validate:"required"`
 	}
 
 	ViewAppointment struct {
@@ -16,15 +19,19 @@ type (
 		UserRole string
 	}
 
+	FilterViewAllAppointment struct {
+		Range string `schema:"range"` // today, week, month
+	}
+
 	ConfirmAppointment struct {
 		Confirm bool `json:"confirm" validate:"required"`
 	}
 
 	FilterAppointmentSchedule struct {
-		DaysInt   []int     `json:"days_int"`
-		StartDate time.Time `json:"start_date"`
-		EndDate   time.Time `json:"end_date"`
-		StartHour string    `json:"start_hour"`
-		EndHour   string    `json:"end_hour"`
+		Days      []string  `schema:"days"`
+		StartDate time.Time `schema:"start_date"`
+		EndDate   time.Time `schema:"end_date"`
+		StartHour string    `schema:"start_hour"`
+		EndHour   string    `schema:"end_hour"`
 	}
 )

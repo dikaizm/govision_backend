@@ -32,7 +32,7 @@ func main() {
 	appointmentRepo := repositories.NewDbAppointmentRepository(db)
 
 	authService := services.NewAuthService(env.SecretKey, userRepo)
-	appointmentService := services.NewAppointmentService(appointmentRepo, userRepo)
+	appointmentService := services.NewAppointmentService(appointmentRepo, userRepo, doctorRepo)
 	doctorService := services.NewDoctorService(doctorRepo, userRepo)
 	fundusService := services.NewFundusService(env.MlApi, env.MlApiKey, fundusRepo, userRepo)
 	userService := services.NewUserService(userRepo)

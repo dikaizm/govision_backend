@@ -29,7 +29,7 @@ type Fundus struct {
 	VerifyStatus     string      `gorm:"size:255"`
 	PredictedDisease string      `gorm:"size:20;check:predicted_disease IN ('no_dr','mild_dr','moderate_dr','severe_dr','proliferative_dr', 'not_detected')"`
 	CreatedAt        time.Time   `gorm:"autoCreateTime"`
-	UpdatedAt        time.Time
+	UpdatedAt        time.Time   `gorm:"autoUpdateTime"`
 }
 
 type CreateFundus struct {
@@ -39,7 +39,7 @@ type CreateFundus struct {
 	VerifyStatus     string    `gorm:"size:255"`
 	PredictedDisease string    `gorm:"size:20;check:predicted_disease IN ('no_dr','mild_dr','moderate_dr','severe_dr','proliferative_dr', 'not_detected')"`
 	CreatedAt        time.Time `gorm:"autoCreateTime"`
-	UpdatedAt        time.Time
+	UpdatedAt        time.Time `gorm:"autoUpdateTime"`
 }
 
 type FundusFeedback struct {
@@ -50,5 +50,5 @@ type FundusFeedback struct {
 	Doctor    UserDoctor `gorm:"foreignKey:DoctorID"`
 	Notes     string     `gorm:"size:255"`
 	CreatedAt time.Time  `gorm:"autoCreateTime"`
-	UpdatedAt time.Time
+	UpdatedAt time.Time  `gorm:"autoUpdateTime"`
 }

@@ -76,7 +76,7 @@ func (r *DbUserRepository) GetAllRole() ([]*domain.UserRole, error) {
 	return roles, nil
 }
 
-func (r *DbUserRepository) CreateDoctorProfile(profile *domain.UserDoctor, practices []*domain.DoctorPractice, educations []*domain.DoctorEducation) (*string, error) {
+func (r *DbUserRepository) CreateDoctorProfile(profile *domain.UserDoctor, practices []*domain.DoctorExperience, educations []*domain.DoctorEducation) (*string, error) {
 	tx := r.DB.Begin()
 	if err := tx.Create(profile).Error; err != nil {
 		tx.Rollback()
