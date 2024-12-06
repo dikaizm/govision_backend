@@ -27,10 +27,12 @@ type (
 	}
 
 	FundusFeedback struct {
-		ID        int64  `json:"id"`
-		Notes     string `json:"notes"`
-		CreatedAt string `json:"created_at"`
-		UpdatedAt string `json:"updated_at,omitempty"`
+		ID           int64  `json:"id"`
+		DoctorUserID string `json:"doctor_user_id"`
+		DoctorName   string `json:"doctor_name"`
+		Notes        string `json:"notes"`
+		CreatedAt    string `json:"created_at"`
+		UpdatedAt    string `json:"updated_at,omitempty"`
 	}
 
 	DetectFundusImage struct {
@@ -51,5 +53,29 @@ type (
 		PredictedDisease string `json:"predicted_disease"`
 		CreatedAt        string `json:"created_at"`
 		UpdatedAt        string `json:"updated_at,omitempty"`
+	}
+
+	ViewFundusHistory struct {
+		ID               int64            `json:"id"`
+		ImageUrl         string           `json:"image_url"`
+		VerifyStatus     string           `json:"verify_status"`
+		PredictedDisease string           `json:"predicted_disease"`
+		CreatedAt        string           `json:"created_at"`
+		UpdatedAt        string           `json:"updated_at,omitempty"`
+		Feedbacks        []FundusFeedback `json:"feedbacks"`
+	}
+)
+
+type (
+	ViewVerifiedFundus struct {
+		ID               int64  `json:"id"`
+		ImageUrl         string `json:"image_url"`
+		VerifyStatus     string `json:"verify_status"`
+		PredictedDisease string `json:"predicted_disease"`
+
+		DiabetesType string `json:"diabetes_type"`
+
+		RecommendedExamination string `json:"recommended_examination"`
+		RecommendedNotes       string `json:"recommended_notes"`
 	}
 )

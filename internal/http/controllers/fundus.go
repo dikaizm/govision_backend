@@ -2,14 +2,17 @@ package controllers
 
 import (
 	"encoding/base64"
+	"errors"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/dikaizm/govision_backend/internal/dto/request"
 	"github.com/dikaizm/govision_backend/internal/dto/response"
 	controller_intf "github.com/dikaizm/govision_backend/internal/http/controllers/interfaces"
 	"github.com/dikaizm/govision_backend/pkg/helpers"
 	service_intf "github.com/dikaizm/govision_backend/pkg/services/interfaces"
+	"gorm.io/gorm"
 )
 
 type FundusController struct {
@@ -92,7 +95,53 @@ func (c *FundusController) DetectFundusImage(w http.ResponseWriter, r *http.Requ
 	helpers.SendResponse(w, res, http.StatusCreated)
 }
 
+func (c *FundusController) ViewFundusHistory(w http.ResponseWriter, r *http.Request) {
+	var fundusResponse []*response.ViewFundusHistory
+
+	user, err := helpers.GetCurrentUser(r)
+	if err != nil {
+		helpers.SendResponse(w, response.Response{
+			Status:  "error",
+			Message: "Failed to get current user",
+			Error:   err.Error(),
+		}, http.StatusInternalServerError)
+		return
+	}
+
+	fundus, err := c.fundusService.ViewFundusHistory(user.ID)
+	if err != nil {
+		helpers.SendResponse(w, response.Response{
+			Status: "error",
+			Error:  err.Error(),
+		}, http.StatusInternalServerError)
+		return
+	}
+
+	for _, f := range fundus {
+		pathArray := strings.Split(f.ImgURL, "/")
+		trimmedPath := pathArray[len(pathArray)-1]
+
+		fundusResponse = append(fundusResponse, &response.ViewFundusHistory{
+			ID:               f.ID,
+			ImageUrl:         trimmedPath,
+			VerifyStatus:     f.VerifyStatus,
+			PredictedDisease: f.PredictedDisease,
+			CreatedAt:        f.CreatedAt.Format("2006-01-02 15:04:05"),
+			UpdatedAt:        f.UpdatedAt.Format("2006-01-02 15:04:05"),
+			Feedbacks:        []response.FundusFeedback{},
+		})
+	}
+
+	helpers.SendResponse(w, response.Response{
+		Status:  "success",
+		Message: "View fundus history success",
+		Data:    fundusResponse,
+	}, http.StatusOK)
+}
+
 func (c *FundusController) ViewFundus(w http.ResponseWriter, r *http.Request) {
+	var fundusResponse *response.ViewFundusHistory
+
 	id, err := helpers.StringToInt64(helpers.UrlVars(r, "id"))
 	if err != nil {
 		helpers.SendResponse(w, response.Response{
@@ -112,10 +161,36 @@ func (c *FundusController) ViewFundus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	pathArray := strings.Split(fundus.ImgURL, "/")
+	trimmedPath := pathArray[len(pathArray)-1]
+
+	fundusResponse = &response.ViewFundusHistory{
+		ID:               fundus.ID,
+		ImageUrl:         trimmedPath,
+		VerifyStatus:     fundus.VerifyStatus,
+		PredictedDisease: fundus.PredictedDisease,
+		CreatedAt:        fundus.CreatedAt.Format("2006-01-02 15:04:05"),
+		UpdatedAt:        fundus.UpdatedAt.Format("2006-01-02 15:04:05"),
+		Feedbacks:        []response.FundusFeedback{},
+	}
+
+	if (len(fundus.Feedbacks)) > 0 {
+		for _, f := range fundus.Feedbacks {
+			fundusResponse.Feedbacks = append(fundusResponse.Feedbacks, response.FundusFeedback{
+				ID:           f.ID,
+				DoctorUserID: f.Doctor.User.ID,
+				DoctorName:   f.Doctor.User.Name,
+				Notes:        f.Notes,
+				CreatedAt:    f.CreatedAt.Format("2006-01-02 15:04:05"),
+				UpdatedAt:    f.UpdatedAt.Format("2006-01-02 15:04:05"),
+			})
+		}
+	}
+
 	helpers.SendResponse(w, response.Response{
 		Status:  "success",
 		Message: "View fundus success",
-		Data:    fundus,
+		Data:    fundusResponse,
 	}, http.StatusOK)
 }
 
@@ -144,11 +219,7 @@ func (c *FundusController) DeleteFundus(w http.ResponseWriter, r *http.Request) 
 	}, http.StatusOK)
 }
 
-func (c *FundusController) RequestVerifyFundusByPatient(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func (c *FundusController) VerifyFundusByDoctor(w http.ResponseWriter, r *http.Request) {
+func (c *FundusController) SetVerifyFundusByDoctor(w http.ResponseWriter, r *http.Request) {
 	fundusID, err := helpers.StringToInt64(helpers.UrlVars(r, "id"))
 	if err != nil {
 		helpers.SendResponse(w, response.Response{
@@ -182,4 +253,67 @@ func (c *FundusController) VerifyFundusByDoctor(w http.ResponseWriter, r *http.R
 		Status:  "success",
 		Message: "Verify fundus success",
 	}, http.StatusOK)
+}
+
+func (c *FundusController) ViewFundusImage(w http.ResponseWriter, r *http.Request) {
+	path := helpers.UrlVars(r, "path")
+
+	fundusImage, err := c.fundusService.GetFundusImage(path)
+	if err != nil {
+		helpers.SendResponse(w, response.Response{
+			Status:  "error",
+			Message: "Failed to locate fundus image",
+			Error:   err.Error(),
+		}, http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "image/jpeg")
+	http.ServeFile(w, r, fundusImage)
+}
+
+func (c *FundusController) ViewVerifiedFundus(w http.ResponseWriter, r *http.Request) {
+	var fundusResponse *response.ViewVerifiedFundus
+
+	user, err := helpers.GetCurrentUser(r)
+	if err != nil {
+		helpers.SendResponse(w, response.Response{
+			Status:  "error",
+			Message: "Failed to get current user",
+			Error:   err.Error(),
+		}, http.StatusInternalServerError)
+		return
+	}
+
+	fundusResponse, err = c.fundusService.ViewVerifiedFundus(user.ID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			helpers.SendResponse(w, response.Response{
+				Status:  "success",
+				Message: "No verified fundus found",
+			}, http.StatusOK)
+			return
+		}
+
+		helpers.SendResponse(w, response.Response{
+			Status: "error",
+			Error:  err.Error(),
+		}, http.StatusInternalServerError)
+		return
+	}
+
+	pathArray := strings.Split(fundusResponse.ImageUrl, "/")
+	trimmedPath := pathArray[len(pathArray)-1]
+
+	fundusResponse.ImageUrl = trimmedPath
+
+	helpers.SendResponse(w, response.Response{
+		Status:  "success",
+		Message: "View verified fundus success",
+		Data:    fundusResponse,
+	}, http.StatusOK)
+}
+
+func (c *FundusController) GetVerifyFundusByPatient(w http.ResponseWriter, r *http.Request) {
+
 }

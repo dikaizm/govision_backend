@@ -14,6 +14,13 @@ type AuthService interface {
 	RegisterAsPatient(userID string, p *request.RegisterPatient) error
 }
 
+type ArticleService interface {
+	Create(p *request.CreateArticle) error
+	CreateBulk(p []*request.CreateArticle) error
+	FindAll() ([]*domain.Article, error)
+	FindByID(id string) (*domain.Article, error)
+}
+
 type AppointmentService interface {
 	Create(p *request.CreateAppointment) (*domain.Appointment, error)
 	FindAllByDoctor(userID string) ([]*domain.Appointment, error)
@@ -24,10 +31,12 @@ type AppointmentService interface {
 type FundusService interface {
 	DetectImage(p *request.DetectFundusImage) (res *response.DetectFundusImage, err error)
 	ViewFundus(fundusID int64) (*domain.Fundus, error)
-	FundusHistory(userID string) ([]*response.FundusHistory, error)
+	ViewFundusHistory(userID string) ([]*domain.Fundus, error)
 	RequestVerifyFundusByPatient() error
 	VerifyFundusByDoctor(fundusID int64, doctorID int64, status string, notes string) error
 	DeleteFundus(fundusID int64) error
+	GetFundusImage(path string) (string, error)
+	ViewVerifiedFundus(userID string) (*response.ViewVerifiedFundus, error)
 }
 
 type UserService interface {

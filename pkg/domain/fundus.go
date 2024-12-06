@@ -30,6 +30,8 @@ type Fundus struct {
 	PredictedDisease string      `gorm:"size:20;check:predicted_disease IN ('no_dr','mild_dr','moderate_dr','severe_dr','proliferative_dr', 'not_detected')"`
 	CreatedAt        time.Time   `gorm:"autoCreateTime"`
 	UpdatedAt        time.Time   `gorm:"autoUpdateTime"`
+
+	Feedbacks []FundusFeedback `gorm:"foreignKey:FundusID;references:ID"`
 }
 
 type CreateFundus struct {

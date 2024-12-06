@@ -9,6 +9,13 @@ type AuthController interface {
 	Login(w http.ResponseWriter, r *http.Request)
 }
 
+type ArticleController interface {
+	Create(w http.ResponseWriter, r *http.Request)
+	CreateBulk(w http.ResponseWriter, r *http.Request)
+	ViewAll(w http.ResponseWriter, r *http.Request)
+	View(w http.ResponseWriter, r *http.Request)
+}
+
 type AppointmentController interface {
 	Create(w http.ResponseWriter, r *http.Request)
 	ViewAll(w http.ResponseWriter, r *http.Request)
@@ -17,10 +24,15 @@ type AppointmentController interface {
 
 type FundusController interface {
 	DetectFundusImage(w http.ResponseWriter, r *http.Request)
+	ViewFundusHistory(w http.ResponseWriter, r *http.Request)
 	ViewFundus(w http.ResponseWriter, r *http.Request)
 	DeleteFundus(w http.ResponseWriter, r *http.Request)
-	RequestVerifyFundusByPatient(w http.ResponseWriter, r *http.Request)
-	VerifyFundusByDoctor(w http.ResponseWriter, r *http.Request)
+
+	GetVerifyFundusByPatient(w http.ResponseWriter, r *http.Request)
+	SetVerifyFundusByDoctor(w http.ResponseWriter, r *http.Request)
+
+	ViewFundusImage(w http.ResponseWriter, r *http.Request)
+	ViewVerifiedFundus(w http.ResponseWriter, r *http.Request)
 }
 
 type UserController interface {

@@ -16,6 +16,16 @@ func FundusRoutes(router *mux.Router, controller route_intf.Controllers, secretK
 	).Methods("POST")
 
 	/*
+		@desc Get all fundus
+		@route /fundus
+		@method GET
+	*/
+	router.Handle(
+		"/fundus",
+		middleware.Authentication(secretKey, http.HandlerFunc(controller.Fundus.ViewFundusHistory)),
+	).Methods("GET")
+
+	/*
 		@desc Get a fundus by user
 		@route /fundus/{id}
 		@method GET
@@ -26,13 +36,39 @@ func FundusRoutes(router *mux.Router, controller route_intf.Controllers, secretK
 	).Methods("GET")
 
 	/*
-		@route /fundus/verify/{id}
+		@desc Get fundus image by path for private access by patient and doctor
+		@route /fundus/image/{path}
+		@method GET
+		@type public
+	*/
+	router.Handle(
+		"/fundus/image/{path}",
+		http.HandlerFunc(controller.Fundus.ViewFundusImage),
+	).Methods("GET")
+
+	/*
+		@desc Get last verified fundus
+		@route /fundus/home/verified
+		@method GET
+	*/
+	router.Handle(
+		"/fundus/home/verified",
+		middleware.Authentication(secretKey, http.HandlerFunc(controller.Fundus.ViewVerifiedFundus)),
+	).Methods("GET")
+
+	router.Handle(
+		"/fundus/get-verify/{id}",
+		middleware.Authentication(secretKey, http.HandlerFunc(controller.Fundus.GetVerifyFundusByPatient)),
+	).Methods("GET")
+
+	/*
+		@route /fundus/set-verify/{id}
 		@method POST
 		@body { "doctor_id", "status", "[]feedbacks" }
 	*/
 	router.Handle(
-		"/fundus/verify/{id}",
-		middleware.Authentication(secretKey, http.HandlerFunc(controller.Fundus.VerifyFundusByDoctor)),
+		"/fundus/set-verify/{id}",
+		middleware.Authentication(secretKey, http.HandlerFunc(controller.Fundus.SetVerifyFundusByDoctor)),
 	).Methods("POST")
 
 	/*

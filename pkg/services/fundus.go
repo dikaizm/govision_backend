@@ -15,6 +15,7 @@ import (
 	"github.com/dikaizm/govision_backend/pkg/helpers"
 	repo_intf "github.com/dikaizm/govision_backend/pkg/repositories/interfaces"
 	service_intf "github.com/dikaizm/govision_backend/pkg/services/interfaces"
+	"gorm.io/gorm"
 )
 
 type ApiRequestBody struct {
@@ -111,7 +112,7 @@ func (u *FundusService) DetectImage(p *request.DetectFundusImage) (res *response
 	}
 
 	// Store image in VM
-	imagePath, err := helpers.StoreImage(mlResponse.Data.CroppedImage)
+	imagePath, err := helpers.StoreImage(mlResponse.Data.CroppedImage, "fundus")
 	if err != nil {
 		return nil, errors.New("failed to store image")
 	}
@@ -163,13 +164,16 @@ func (u *FundusService) DetectImage(p *request.DetectFundusImage) (res *response
 func (u *FundusService) ViewFundus(fundusID int64) (*domain.Fundus, error) {
 	fundus, err := u.fundusRepo.FindByID(fundusID)
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, err
+		}
 		return nil, errors.New("failed to find fundus record")
 	}
 
 	return fundus, nil
 }
 
-func (u *FundusService) FundusHistory(userID string) ([]*response.FundusHistory, error) {
+func (u *FundusService) ViewFundusHistory(userID string) ([]*domain.Fundus, error) {
 	patient, err := u.userRepo.FindPatientProfileByID(userID)
 	if err != nil {
 		return nil, errors.New("failed to find patient")
@@ -205,4 +209,45 @@ func (u *FundusService) DeleteFundus(fundusID int64) error {
 		return err
 	}
 	return nil
+}
+
+func (u *FundusService) GetFundusImage(path string) (string, error) {
+	image, err := helpers.GetImageByPath("fundus", path)
+	if err != nil {
+		return "", errors.New("failed to get image")
+	}
+	return *image, nil
+}
+
+func (u *FundusService) ViewVerifiedFundus(userID string) (*response.ViewVerifiedFundus, error) {
+	var fundusResponse *response.ViewVerifiedFundus
+
+	// Get patient profile
+	patient, err := u.userRepo.FindPatientProfileByID(userID)
+	if err != nil {
+		return nil, errors.New("failed to find patient")
+	}
+
+	// Get last verified fundus record
+	verifiedFundus, err := u.fundusRepo.FindLastVerifiedByPatient(patient.ID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, err
+		}
+
+		return nil, errors.New("failed to find verified fundus")
+	}
+
+	// verifiedFundus
+	fundusResponse = &response.ViewVerifiedFundus{
+		ID:                     verifiedFundus.ID,
+		ImageUrl:               verifiedFundus.ImgURL,
+		VerifyStatus:           verifiedFundus.VerifyStatus,
+		PredictedDisease:       verifiedFundus.PredictedDisease,
+		DiabetesType:           patient.DiabetesType,
+		RecommendedExamination: patient.RecommendedExamination,
+		RecommendedNotes:       patient.RecommendedNotes,
+	}
+
+	return fundusResponse, nil
 }

@@ -64,12 +64,14 @@ type UserDoctor struct {
 }
 
 type UserPatient struct {
-	ID              int64      `gorm:"primaryKey"`
-	UserID          string     `gorm:"not null"`
-	User            User       `gorm:"foreignKey:UserID"`
-	DiabetesHistory bool       `gorm:"not null"`
-	DiabetesType    string     `gorm:"size:50"`
-	DiagnosisDate   dtype.Date `gorm:"type:date"`
-	CreatedAt       time.Time  `gorm:"autoCreateTime"`
-	UpdatedAt       time.Time  `gorm:"autoUpdateTime"`
+	ID                     int64      `gorm:"primaryKey"`
+	UserID                 string     `gorm:"not null"`
+	User                   User       `gorm:"foreignKey:UserID"`
+	DiabetesHistory        bool       `gorm:"not null"`
+	DiabetesType           string     `gorm:"size:50"`
+	DiagnosisDate          dtype.Date `gorm:"type:date"`
+	RecommendedExamination string     `gorm:"size:100"`
+	RecommendedNotes       string     `gorm:"size:255"`
+	CreatedAt              time.Time  `gorm:"autoCreateTime"`
+	UpdatedAt              time.Time  `gorm:"autoUpdateTime"`
 }

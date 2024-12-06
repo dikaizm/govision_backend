@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"github.com/dikaizm/govision_backend/internal/dto/response"
 	"github.com/dikaizm/govision_backend/pkg/domain"
 	repo_intf "github.com/dikaizm/govision_backend/pkg/repositories/interfaces"
 	"gorm.io/gorm"
@@ -41,21 +40,26 @@ func (r *DbFundusRepository) CreateFeedbackByDoctor(fundusID int64, doctorID int
 	return nil
 }
 
-func (r *DbFundusRepository) FindAllByPatient(patientID int64) (res []*response.FundusHistory, err error) {
-	err = r.DB.Where("patient_id = ?", patientID).Find(&res).Error
-	if err != nil {
+func (r *DbFundusRepository) FindAllByPatient(patientID int64) (res []*domain.Fundus, err error) {
+	if err = r.DB.Where("patient_id = ?", patientID).
+		Order("created_at desc, updated_at desc").
+		Find(&res).Error; err != nil {
 		return nil, err
 	}
 	return res, nil
 }
 
 func (r *DbFundusRepository) FindByID(id int64) (*domain.Fundus, error) {
-	var fundus domain.Fundus
-	err := r.DB.First(&fundus, id).Error
+	var fundus *domain.Fundus
+	err := r.DB.
+		Preload("Feedbacks").
+		Preload("Feedbacks.Doctor").
+		Preload("Feedbacks.Doctor.User").
+		First(&fundus, id).Error
 	if err != nil {
 		return nil, err
 	}
-	return &fundus, nil
+	return fundus, nil
 }
 
 func (r *DbFundusRepository) DeleteByID(id int64) error {
@@ -84,4 +88,19 @@ func (r *DbFundusRepository) UpdateVerifyStatusByDoctor(id int64, doctorID int64
 		return err
 	}
 	return nil
+}
+
+func (r *DbFundusRepository) FindLastVerifiedByPatient(patientID int64) (*domain.Fundus, error) {
+	var fundus *domain.Fundus
+
+	err := r.DB.
+		Where("patient_id = ?", patientID).
+		Where("verify_status = ?", "verified").
+		Order("updated_at desc").
+		First(&fundus).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return fundus, nil
 }

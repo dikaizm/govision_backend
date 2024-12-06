@@ -12,7 +12,9 @@ import (
 	"time"
 )
 
-func StoreImage(imageBlob string) (string, error) {
+func StoreImage(imageBlob string, path string) (string, error) {
+	storagePath := filepath.Join("storage/images", path)
+
 	// Decode the base64 string
 	imageData, err := base64.StdEncoding.DecodeString(imageBlob)
 	if err != nil {
@@ -21,10 +23,10 @@ func StoreImage(imageBlob string) (string, error) {
 
 	// Generate a unique file name using the current timestamp
 	fileName := fmt.Sprintf("image_%d.jpg", time.Now().UnixNano())
-	filePath := filepath.Join("storage/images/fundus", fileName)
+	filePath := filepath.Join(storagePath, fileName)
 
 	// Ensure the directory exists
-	if err := os.MkdirAll("storage/images/fundus", os.ModePerm); err != nil {
+	if err := os.MkdirAll(storagePath, os.ModePerm); err != nil {
 		return "", fmt.Errorf("failed to create directory: %v", err)
 	}
 
@@ -72,4 +74,16 @@ func ConvertImageToBase64(imagePath string) (string, error) {
 	base64Str := base64.StdEncoding.EncodeToString(buf.Bytes())
 
 	return base64Str, nil
+}
+
+func GetImageByPath(folderName string, path string) (*string, error) {
+	fullPath := filepath.Join("storage/images", folderName, path)
+
+	// Get the absolute path
+	absPath, err := filepath.Abs(fullPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get absolute path: %v", err)
+	}
+
+	return &absPath, nil
 }

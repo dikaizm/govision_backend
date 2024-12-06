@@ -25,4 +25,4 @@ go.work
 *.pem
 
 storage/images/fundus/
-app.log
+logs/

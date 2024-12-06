@@ -6,6 +6,7 @@ import (
 
 type Controllers struct {
 	Auth        controller_intf.AuthController
+	Article     controller_intf.ArticleController
 	Appointment controller_intf.AppointmentController
 	Fundus      controller_intf.FundusController
 	User        controller_intf.UserController

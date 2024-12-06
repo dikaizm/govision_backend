@@ -30,14 +30,17 @@ func main() {
 	doctorRepo := repositories.NewDbDoctorRepository(db)
 	fundusRepo := repositories.NewDbFundusRepository(db)
 	appointmentRepo := repositories.NewDbAppointmentRepository(db)
+	articleRepo := repositories.NewDbArticleRepository(db)
 
 	authService := services.NewAuthService(env.SecretKey, userRepo)
+	articleService := services.NewArticleService(articleRepo)
 	appointmentService := services.NewAppointmentService(appointmentRepo, userRepo, doctorRepo)
 	doctorService := services.NewDoctorService(doctorRepo, userRepo)
 	fundusService := services.NewFundusService(env.MlApi, env.MlApiKey, fundusRepo, userRepo)
 	userService := services.NewUserService(userRepo)
 
 	authController := controllers.NewAuthController(authService)
+	articleController := controllers.NewArticleController(articleService)
 	appointmentController := controllers.NewAppointmentController(appointmentService)
 	doctorController := controllers.NewDoctorController(doctorService)
 	fundusController := controllers.NewFundusController(fundusService)
@@ -45,6 +48,7 @@ func main() {
 
 	router := routes.SetupRouter(env.SecretKey, route_intf.Controllers{
 		Auth:        authController,
+		Article:     articleController,
 		Appointment: appointmentController,
 		Doctor:      doctorController,
 		Fundus:      fundusController,

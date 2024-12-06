@@ -55,5 +55,6 @@ func AutoMigrate(db *gorm.DB) {
 		&domain.Appointment{},
 		&domain.Fundus{},
 		&domain.FundusFeedback{},
+		&domain.Article{},
 	)
 }

@@ -2,9 +2,16 @@ package repo_intf
 
 import (
 	"github.com/dikaizm/govision_backend/internal/dto/request"
-	"github.com/dikaizm/govision_backend/internal/dto/response"
 	"github.com/dikaizm/govision_backend/pkg/domain"
 )
+
+type ArticleRepository interface {
+	Create(article *domain.Article) error
+	CreateBulk(articles []*domain.Article) error
+	FindAll() ([]*domain.Article, error)
+	FindByID(id string) (*domain.Article, error)
+	Update(article *domain.Article) error
+}
 
 type AppointmentRepository interface {
 	Create(apt *domain.Appointment) (*domain.Appointment, error)
@@ -17,11 +24,12 @@ type AppointmentRepository interface {
 type FundusRepository interface {
 	Create(fundus *domain.CreateFundus) (*domain.Fundus, error)
 	CreateFeedbackByDoctor(fundusID int64, doctorID int64, notes string) error
-	FindAllByPatient(patientID int64) (res []*response.FundusHistory, err error)
+	FindAllByPatient(patientID int64) (res []*domain.Fundus, err error)
 	FindByID(id int64) (*domain.Fundus, error)
 	DeleteByID(id int64) error
 	DeleteFeedbackByDoctor(id int64, doctorID int64) error
 	UpdateVerifyStatusByDoctor(id int64, doctorID int64, verifyStatus string) error
+	FindLastVerifiedByPatient(patientID int64) (*domain.Fundus, error)
 }
 
 type UserRepository interface {
