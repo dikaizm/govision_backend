@@ -28,8 +28,8 @@ type FundusController interface {
 	ViewFundus(w http.ResponseWriter, r *http.Request)
 	DeleteFundus(w http.ResponseWriter, r *http.Request)
 
-	GetVerifyFundusByPatient(w http.ResponseWriter, r *http.Request)
-	SetVerifyFundusByDoctor(w http.ResponseWriter, r *http.Request)
+	RequestVerifyFundusByPatient(w http.ResponseWriter, r *http.Request)
+	UpdateVerifyFundusByDoctor(w http.ResponseWriter, r *http.Request)
 
 	ViewFundusImage(w http.ResponseWriter, r *http.Request)
 	ViewVerifiedFundus(w http.ResponseWriter, r *http.Request)

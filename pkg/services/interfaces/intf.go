@@ -32,7 +32,7 @@ type FundusService interface {
 	DetectImage(p *request.DetectFundusImage) (res *response.DetectFundusImage, err error)
 	ViewFundus(fundusID int64) (*domain.Fundus, error)
 	ViewFundusHistory(userID string) ([]*domain.Fundus, error)
-	RequestVerifyFundusByPatient() error
+	RequestVerifyFundusByPatient(fundusID int64) error
 	VerifyFundusByDoctor(fundusID int64, doctorID int64, status string, notes string) error
 	DeleteFundus(fundusID int64) error
 	GetFundusImage(path string) (string, error)

@@ -77,6 +77,17 @@ func (r *DbFundusRepository) DeleteFeedbackByDoctor(id int64, doctorID int64) er
 	return nil
 }
 
+func (r *DbFundusRepository) RequestVerifyStatusByPatient(id int64) error {
+	err := r.DB.Model(&domain.Fundus{}).
+		Where("id = ?", id).
+		Update("verify_status", "on_review").
+		Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (r *DbFundusRepository) UpdateVerifyStatusByDoctor(id int64, doctorID int64, verifyStatus string) error {
 	err := r.DB.Model(&domain.Fundus{}).
 		Where("id = ?", id).

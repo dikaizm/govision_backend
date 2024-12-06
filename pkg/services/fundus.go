@@ -187,8 +187,20 @@ func (u *FundusService) ViewFundusHistory(userID string) ([]*domain.Fundus, erro
 	return fundusList, nil
 }
 
-func (u *FundusService) RequestVerifyFundusByPatient() error {
-	// TODO: Implement this
+func (u *FundusService) RequestVerifyFundusByPatient(fundusID int64) error {
+	fundus, err := u.fundusRepo.FindByID(fundusID)
+	if err != nil {
+		return errors.New("failed to find fundus")
+	}
+
+	if fundus.VerifyStatus != domain.FundusVerifyStatusPending {
+		return errors.New("fundus is not in pending status")
+	}
+
+	if err := u.fundusRepo.RequestVerifyStatusByPatient(fundus.ID); err != nil {
+		return errors.New("failed to request verify fundus")
+	}
+
 	return nil
 }
 

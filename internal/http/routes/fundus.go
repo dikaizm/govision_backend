@@ -57,9 +57,9 @@ func FundusRoutes(router *mux.Router, controller route_intf.Controllers, secretK
 	).Methods("GET")
 
 	router.Handle(
-		"/fundus/get-verify/{id}",
-		middleware.Authentication(secretKey, http.HandlerFunc(controller.Fundus.GetVerifyFundusByPatient)),
-	).Methods("GET")
+		"/fundus/{id}/request-verify",
+		middleware.Authentication(secretKey, http.HandlerFunc(controller.Fundus.RequestVerifyFundusByPatient)),
+	).Methods("POST")
 
 	/*
 		@route /fundus/set-verify/{id}
@@ -67,8 +67,8 @@ func FundusRoutes(router *mux.Router, controller route_intf.Controllers, secretK
 		@body { "doctor_id", "status", "[]feedbacks" }
 	*/
 	router.Handle(
-		"/fundus/set-verify/{id}",
-		middleware.Authentication(secretKey, http.HandlerFunc(controller.Fundus.SetVerifyFundusByDoctor)),
+		"/fundus/{id}/update-verify",
+		middleware.Authentication(secretKey, http.HandlerFunc(controller.Fundus.UpdateVerifyFundusByDoctor)),
 	).Methods("POST")
 
 	/*

@@ -28,6 +28,7 @@ type FundusRepository interface {
 	FindByID(id int64) (*domain.Fundus, error)
 	DeleteByID(id int64) error
 	DeleteFeedbackByDoctor(id int64, doctorID int64) error
+	RequestVerifyStatusByPatient(id int64) error
 	UpdateVerifyStatusByDoctor(id int64, doctorID int64, verifyStatus string) error
 	FindLastVerifiedByPatient(patientID int64) (*domain.Fundus, error)
 }

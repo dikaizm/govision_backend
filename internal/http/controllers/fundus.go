@@ -219,7 +219,7 @@ func (c *FundusController) DeleteFundus(w http.ResponseWriter, r *http.Request) 
 	}, http.StatusOK)
 }
 
-func (c *FundusController) SetVerifyFundusByDoctor(w http.ResponseWriter, r *http.Request) {
+func (c *FundusController) UpdateVerifyFundusByDoctor(w http.ResponseWriter, r *http.Request) {
 	fundusID, err := helpers.StringToInt64(helpers.UrlVars(r, "id"))
 	if err != nil {
 		helpers.SendResponse(w, response.Response{
@@ -314,6 +314,29 @@ func (c *FundusController) ViewVerifiedFundus(w http.ResponseWriter, r *http.Req
 	}, http.StatusOK)
 }
 
-func (c *FundusController) GetVerifyFundusByPatient(w http.ResponseWriter, r *http.Request) {
+func (c *FundusController) RequestVerifyFundusByPatient(w http.ResponseWriter, r *http.Request) {
+	fundusID, err := helpers.StringToInt64(helpers.UrlVars(r, "id"))
+	if err != nil {
+		helpers.SendResponse(w, response.Response{
+			Status:  "error",
+			Message: "Invalid fundus ID",
+			Error:   err.Error(),
+		}, http.StatusBadRequest)
+		return
+	}
 
+	err = c.fundusService.RequestVerifyFundusByPatient(*fundusID)
+	if err != nil {
+		helpers.SendResponse(w, response.Response{
+			Status:  "error",
+			Message: "Failed to request verify fundus",
+			Error:   err.Error(),
+		}, http.StatusInternalServerError)
+		return
+	}
+
+	helpers.SendResponse(w, response.Response{
+		Status:  "success",
+		Message: "Request verify fundus success",
+	}, http.StatusOK)
 }
