@@ -16,7 +16,7 @@ COPY . .
 COPY .env ./
 
 # Build the Go app (main.go is inside cmd folder)
-RUN go build -o /app/main cmd/main.go
+RUN go build -o /cmd/main cmd/main.go
 
 # Start a new image from scratch
 FROM debian:bullseye-slim
