@@ -61,7 +61,7 @@ func (lm *LoggerManager) RotateLogFile() error {
 	}
 
 	// Ensure the logs directory exists
-	logDir := "logs"
+	logDir := "logs/"
 	if _, err := os.Stat(logDir); os.IsNotExist(err) {
 		err := os.Mkdir(logDir, 0755)
 		if err != nil {
