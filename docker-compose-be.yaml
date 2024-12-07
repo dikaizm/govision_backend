@@ -8,8 +8,6 @@ services:
       - "8046:8046"
     env_file:
       - .env  # Load environment variables from .env file
-    depends_on:
-      - database  # Ensure backend starts after the database service
     networks:
       - govision-db-network
       - govision-model-network
