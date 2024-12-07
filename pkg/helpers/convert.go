@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/dikaizm/govision_backend/pkg/domain"
 	"github.com/dikaizm/govision_backend/pkg/helpers/dtype"
 )
 
@@ -43,4 +44,13 @@ func GetWorkYears(start dtype.Date, end dtype.Date) int {
 	}
 
 	return year
+}
+
+func GetRoleIDByName(roleName string, roles []*domain.UserRole) int {
+	for _, role := range roles {
+		if role.RoleName == roleName {
+			return role.ID
+		}
+	}
+	return -1
 }

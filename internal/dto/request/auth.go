@@ -13,10 +13,9 @@ type (
 
 		Phone     string     `json:"phone" validate:"required,e164"`
 		BirthDate dtype.Date `json:"birth_date" validate:"required"`
-		Gender    string     `json:"gender" validate:"required"`
+		Gender    string     `json:"gender" validate:"required,oneof=male female"`
 
-		Role   string `json:"role" validate:"required"`
-		RoleID int    `json:"role_id" validate:"required"`
+		Role string `json:"role" validate:"required,oneof=doctor patient"`
 
 		Village       string `json:"village"`
 		Subdistrict   string `json:"subdistrict"`

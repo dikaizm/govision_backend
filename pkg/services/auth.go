@@ -25,6 +25,16 @@ func NewAuthService(secretKey string, userRepo repo_intf.UserRepository) service
 }
 
 func (u *AuthService) Register(p *request.Register) (*response.Register, error) {
+	// Check if email already exists
+	userExist, err := u.userRepo.FindByEmail(p.Email)
+	if err != nil {
+		return nil, errors.New("error finding user by email")
+	}
+
+	if userExist != nil {
+		return nil, errors.New("email already exists")
+	}
+
 	// Check if password and confirm password match
 	if p.Password != p.ConfirmPassword {
 		return nil, errors.New("password and confirm password do not match")
@@ -36,6 +46,16 @@ func (u *AuthService) Register(p *request.Register) (*response.Register, error) 
 		return nil, err
 	}
 
+	roles, err := u.userRepo.GetAllRole()
+	if err != nil {
+		return nil, err
+	}
+
+	roleID := helpers.GetRoleIDByName(p.Role, roles)
+	if roleID == -1 {
+		return nil, errors.New("role not found")
+	}
+
 	// Create user
 	user := &domain.User{
 		ID:            helpers.GenerateUserID(),
@@ -43,7 +63,7 @@ func (u *AuthService) Register(p *request.Register) (*response.Register, error) 
 		Phone:         p.Phone,
 		Email:         p.Email,
 		Password:      hashedPassword,
-		RoleID:        p.RoleID,
+		RoleID:        roleID,
 		BirthDate:     p.BirthDate,
 		Gender:        p.Gender,
 		City:          p.City,

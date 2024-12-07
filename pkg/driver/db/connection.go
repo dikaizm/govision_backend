@@ -62,8 +62,8 @@ func AutoMigrate(db *gorm.DB) {
 func SeedRole(db *gorm.DB) {
 	roles := []domain.UserRole{
 		{RoleName: "admin"},
-		{RoleName: "doctor"},
 		{RoleName: "patient"},
+		{RoleName: "doctor"},
 	}
 
 	for _, role := range roles {
