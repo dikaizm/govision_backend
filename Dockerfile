@@ -25,10 +25,10 @@ FROM debian:bullseye-slim
 WORKDIR /root/
 
 # Copy the Pre-built binary file from the 'builder' image
-COPY --from=builder /app/main .
+# COPY --from=builder /cmd/main .
 
 # Expose port
-EXPOSE 8259
+EXPOSE 8046
 
 # Command to run the executable
-CMD ["./main"]
+CMD ["./cmd/main"]
