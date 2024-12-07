@@ -17,9 +17,8 @@ func NewDbUserRepository(db *gorm.DB) repo_intf.UserRepository {
 }
 
 func (r *DbUserRepository) Create(user *domain.User) (*string, error) {
-	var userCode string = ""
 	if err := r.DB.Create(user).Error; err != nil {
-		return &userCode, err
+		return nil, err
 	}
 	return &user.ID, nil
 }

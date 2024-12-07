@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/dikaizm/govision_backend/internal/dto/request"
@@ -31,8 +30,6 @@ func (c *AuthController) Register(w http.ResponseWriter, r *http.Request) {
 		}, http.StatusBadRequest)
 		return
 	}
-
-	fmt.Println("req", req)
 
 	// Validate the request body
 	err := validate.Struct(&req)
