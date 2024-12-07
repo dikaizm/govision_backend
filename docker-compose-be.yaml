@@ -11,8 +11,11 @@ services:
     depends_on:
       - database  # Ensure backend starts after the database service
     networks:
-      - govision-network
+      - govision-db-network
+      - govision-model-network
 
 networks:
-  govision-network:
-    driver: bridge
+  govision-db-network:
+    external: true
+  govision-model-network:
+    external: true

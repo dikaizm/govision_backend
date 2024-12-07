@@ -8,7 +8,13 @@ services:
       - .env  # Load environment variables from .env file
     volumes:
       - dbdata:/var/lib/postgresql/data
+    networks:
+      - govision-db-network
 
 volumes:
   dbdata:
     driver: local
+
+networks:
+  govision-db-network:
+    driver: bridge
