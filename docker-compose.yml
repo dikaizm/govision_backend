@@ -15,7 +15,7 @@ services:
 
   backend:
     build:
-      context: ./backend  # Build context is your backend directory
+      context: .
       dockerfile: Dockerfile
     container_name: govision-backend
     ports:
