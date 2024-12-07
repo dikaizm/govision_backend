@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   database:
     image: postgres:14.3
@@ -22,13 +20,6 @@ services:
       - .env  # Load environment variables from .env file
     depends_on:
       - database  # Ensure backend starts after the database service
-    healthcheck:
-      test: ["CMD", "pg_isready", "-h", "database", "-p", "5432", "-U", "gv_admin"]
-      interval: 10s
-      retries: 5
-      start_period: 30s
-      timeout: 10s
-    entrypoint: ["sh", "-c", "until pg_isready -h database -p 5432 -U gv_admin; do echo 'Waiting for DB'; sleep 2; done; ./main"]
 
 volumes:
   dbdata:
