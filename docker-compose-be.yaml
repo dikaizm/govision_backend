@@ -1,14 +1,4 @@
 services:
-  database:
-    image: postgres:14.3
-    container_name: govision-db
-    ports:
-      - "5432:5432"
-    env_file:
-      - .env  # Load environment variables from .env file
-    volumes:
-      - dbdata:/var/lib/postgresql/data
-
   backend:
     build:
       context: .
@@ -26,7 +16,3 @@ services:
 networks:
   govision-network:
     driver: bridge
-
-volumes:
-  dbdata:
-    driver: local
