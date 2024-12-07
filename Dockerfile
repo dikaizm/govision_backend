@@ -26,6 +26,7 @@ WORKDIR /root/
 
 # Copy the Pre-built binary file from the 'builder' image
 COPY --from=builder /app/main .
+COPY --from=builder /app/.env .
 
 # Expose port
 EXPOSE 8046
