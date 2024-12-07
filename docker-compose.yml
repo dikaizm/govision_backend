@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  database:
+    image: postgres:14.3
+    container_name: govision-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: gv_admin
+      POSTGRES_PASSWORD: tsdnjaya
+      POSTGRES_DB: govision_db
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: govision-backend
+    ports:
+      - "8259:8259"
+    environment:
+      - DB_HOST=database  # Use the service name 'database' as the host
+      - DB_PORT=5432
+      - DB_NAME=govision_db
+      - DB_USER=gv_admin
+      - DB_PASSWORD=tsdnjaya
+    depends_on:
+      - database  # Ensure backend starts after the database service
+    # Add a healthcheck to ensure the backend waits for the database to be ready
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "database", "-p", "5432", "-U", "gv_admin"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+volumes:
+  dbdata:
+    driver: local
