@@ -6,10 +6,8 @@ services:
     container_name: govision-db
     ports:
       - "5432:5432"
-    environment:
-      POSTGRES_USER: gv_admin
-      POSTGRES_PASSWORD: tsdnjaya
-      POSTGRES_DB: govision_db
+    env_file:
+      - .env  # Load environment variables from .env file
     volumes:
       - dbdata:/var/lib/postgresql/data
 
@@ -20,21 +18,17 @@ services:
     container_name: govision-backend
     ports:
       - "8046:8046"
-    environment:
-      - DB_HOST=database  # Use the service name 'database' as the host
-      - DB_PORT=5432
-      - DB_NAME=govision_db
-      - DB_USER=gv_admin
-      - DB_PASSWORD=tsdnjaya
+    env_file:
+      - .env  # Load environment variables from .env file
     depends_on:
       - database  # Ensure backend starts after the database service
-    # Add a healthcheck to ensure the backend waits for the database to be ready
     healthcheck:
       test: ["CMD", "pg_isready", "-h", "database", "-p", "5432", "-U", "gv_admin"]
       interval: 10s
       retries: 5
       start_period: 30s
       timeout: 10s
+    entrypoint: ["sh", "-c", "until pg_isready -h database -p 5432 -U gv_admin; do echo 'Waiting for DB'; sleep 2; done; ./main"]
 
 volumes:
   dbdata:
