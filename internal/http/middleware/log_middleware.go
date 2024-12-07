@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -59,8 +60,17 @@ func (lm *LoggerManager) RotateLogFile() error {
 		lm.logFile.Close()
 	}
 
+	// Ensure the logs directory exists
+	logDir := "logs"
+	if _, err := os.Stat(logDir); os.IsNotExist(err) {
+		err := os.Mkdir(logDir, 0755)
+		if err != nil {
+			return fmt.Errorf("failed to create logs directory: %w", err)
+		}
+	}
+
 	// Open a new log file
-	logFileName := "logs/" + currentDay + ".log"
+	logFileName := logDir + currentDay + ".log"
 	file, err := os.OpenFile(logFileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return err
