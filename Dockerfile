@@ -16,7 +16,7 @@ COPY . .
 COPY .env ./
 
 # Build the Go app (main.go is inside cmd folder)
-RUN go build -o /cmd/main cmd/main.go
+RUN go build -o /app/main cmd/main.go
 
 # Start a new image from scratch
 FROM debian:bullseye-slim
@@ -25,10 +25,10 @@ FROM debian:bullseye-slim
 WORKDIR /root/
 
 # Copy the Pre-built binary file from the 'builder' image
-# COPY --from=builder /cmd/main .
+COPY --from=builder /app/main .
 
 # Expose port
 EXPOSE 8046
 
 # Command to run the executable
-CMD ["./cmd/main"]
+CMD ["./main"]
