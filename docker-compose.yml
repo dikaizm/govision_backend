@@ -15,11 +15,11 @@ services:
 
   backend:
     build:
-      context: .
+      context: ./backend  # Build context is your backend directory
       dockerfile: Dockerfile
     container_name: govision-backend
     ports:
-      - "8259:8259"
+      - "8046:8046"
     environment:
       - DB_HOST=database  # Use the service name 'database' as the host
       - DB_PORT=5432
