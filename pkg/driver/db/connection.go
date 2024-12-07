@@ -58,3 +58,25 @@ func AutoMigrate(db *gorm.DB) {
 		&domain.Article{},
 	)
 }
+
+func SeedRole(db *gorm.DB) {
+	roles := []domain.UserRole{
+		{RoleName: "admin"},
+		{RoleName: "doctor"},
+		{RoleName: "patient"},
+	}
+
+	for _, role := range roles {
+		// Check if the role already exists in the database
+		var existingRole domain.UserRole
+		if err := db.Where("role_name = ?", role.RoleName).First(&existingRole).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				// Role not found, create it
+				db.Create(&role)
+			} else {
+				// Handle other errors (if any)
+				fmt.Println("Error checking role:", err)
+			}
+		}
+	}
+}

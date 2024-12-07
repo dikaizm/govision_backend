@@ -25,6 +25,7 @@ func main() {
 	}
 
 	driver_db.AutoMigrate(db)
+	driver_db.SeedRole(db)
 
 	userRepo := repositories.NewDbUserRepository(db)
 	doctorRepo := repositories.NewDbDoctorRepository(db)
