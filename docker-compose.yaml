@@ -20,6 +20,12 @@ services:
       - .env  # Load environment variables from .env file
     depends_on:
       - database  # Ensure backend starts after the database service
+    networks:
+      - govision-network
+
+networks:
+  govision-network:
+    driver: bridge
 
 volumes:
   dbdata:
