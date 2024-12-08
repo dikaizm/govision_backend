@@ -45,6 +45,8 @@ func (c *DoctorController) ViewAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	doctorResponse = []*response.GetDoctorProfilePreview{}
+
 	for _, doctor := range doctors {
 		doctorResponse = append(doctorResponse, &response.GetDoctorProfilePreview{
 			UserID:         doctor.UserID,
