@@ -11,7 +11,7 @@ type (
 		Password        string `json:"password" validate:"required,min=8,max=100"`
 		ConfirmPassword string `json:"confirm_password" validate:"required,min=8,max=100"`
 
-		Phone     string     `json:"phone" validate:"required,e164"`
+		Phone     string     `json:"phone" validate:"required,e164"` // E.164 format
 		BirthDate dtype.Date `json:"birth_date" validate:"required"`
 		Gender    string     `json:"gender" validate:"required,oneof=male female"`
 

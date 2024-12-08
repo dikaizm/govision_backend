@@ -58,17 +58,19 @@ func (u *AuthService) Register(p *request.Register) (*response.Register, error) 
 
 	// Create user
 	user := &domain.User{
-		ID:            helpers.GenerateUserID(),
-		Name:          p.Name,
-		Phone:         p.Phone,
-		Email:         p.Email,
-		Password:      hashedPassword,
-		RoleID:        roleID,
-		BirthDate:     p.BirthDate,
-		Gender:        p.Gender,
-		City:          p.City,
-		Province:      p.Province,
-		AddressDetail: p.AddressDetail,
+		ID:               helpers.GenerateUserID(),
+		Name:             p.Name,
+		Phone:            p.Phone,
+		Email:            p.Email,
+		Password:         hashedPassword,
+		RoleID:           roleID,
+		BirthDate:        p.BirthDate,
+		Gender:           p.Gender,
+		City:             p.City,
+		Province:         p.Province,
+		AddressDetail:    p.AddressDetail,
+		Photo:            "",
+		CompletedProfile: false,
 	}
 
 	_, err = u.userRepo.Create(user)
@@ -92,11 +94,13 @@ func (u *AuthService) Register(p *request.Register) (*response.Register, error) 
 	}
 
 	return &response.Register{
-		UserID:      user.ID,
-		Name:        p.Name,
-		Email:       p.Email,
-		Role:        p.Role,
-		AccessToken: resultJWT.Token,
+		UserID:           user.ID,
+		Name:             p.Name,
+		Email:            p.Email,
+		Role:             p.Role,
+		Photo:            "",
+		CompletedProfile: false,
+		AccessToken:      resultJWT.Token,
 	}, nil
 }
 
@@ -133,12 +137,13 @@ func (u *AuthService) Login(p *request.Login) (*response.Login, error) {
 	}
 
 	return &response.Login{
-		UserID:      user.ID,
-		Name:        user.Name,
-		Email:       user.Email,
-		Role:        user.Role.RoleName,
-		Photo:       user.Photo,
-		AccessToken: resultJWT.Token,
+		UserID:           user.ID,
+		Name:             user.Name,
+		Email:            user.Email,
+		Role:             user.Role.RoleName,
+		Photo:            user.Photo,
+		AccessToken:      resultJWT.Token,
+		CompletedProfile: user.CompletedProfile,
 	}, nil
 }
 

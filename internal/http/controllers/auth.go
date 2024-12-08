@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/dikaizm/govision_backend/internal/dto/request"
 	"github.com/dikaizm/govision_backend/internal/dto/response"
@@ -41,6 +42,12 @@ func (c *AuthController) Register(w http.ResponseWriter, r *http.Request) {
 		}, http.StatusBadRequest)
 		return
 	}
+
+	req.Village = strings.ToUpper(req.Village)
+	req.Subdistrict = strings.ToUpper(req.Subdistrict)
+	req.City = strings.ToUpper(req.City)
+	req.Province = strings.ToUpper(req.Province)
+	req.AddressDetail = strings.ToUpper(req.AddressDetail)
 
 	user, err := c.authService.Register(&req)
 	if err != nil {

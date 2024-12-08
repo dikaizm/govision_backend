@@ -40,9 +40,10 @@ type (
 )
 
 type GetUser struct {
-	UserID string `json:"user_id"`
-	Name   string `json:"name"`
-	Role   string `json:"role"`
-	Email  string `json:"email"`
-	Photo  string `json:"photo"`
+	UserID           string `json:"user_id"`
+	Name             string `json:"name"`
+	Role             string `json:"role"`
+	Email            string `json:"email"`
+	Photo            string `json:"photo"`
+	CompletedProfile bool   `json:"completed_profile"`
 }

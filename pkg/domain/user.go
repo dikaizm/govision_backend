@@ -18,23 +18,24 @@ const (
 )
 
 type User struct {
-	ID            string     `gorm:"primaryKey"`
-	Name          string     `gorm:"not null;size:100"`
-	Phone         string     `gorm:"not null;size:50;unique"`
-	Email         string     `gorm:"not null;size:255;unique"`
-	Password      string     `gorm:"not null;size:255"`
-	RoleID        int        `gorm:"not null"`
-	Role          UserRole   `gorm:"foreignKey:RoleID"`
-	BirthDate     dtype.Date `gorm:"type:date;not null"`
-	Gender        string     `gorm:"size:6;check:gender IN ('male','female')"`
-	Village       string     `gorm:"not null;size:100"`
-	Subdistrict   string     `gorm:"not null;size:100"`
-	City          string     `gorm:"not null;size:100"`
-	Province      string     `gorm:"not null;size:100"`
-	AddressDetail string     `gorm:"not null;size:255"`
-	Photo         string     `gorm:"size:255"`
-	CreatedAt     time.Time  `gorm:"autoCreateTime"`
-	UpdatedAt     time.Time  `gorm:"autoUpdateTime"`
+	ID               string     `gorm:"primaryKey"`
+	Name             string     `gorm:"not null;size:100"`
+	Phone            string     `gorm:"not null;size:50;unique"`
+	Email            string     `gorm:"not null;size:255;unique"`
+	Password         string     `gorm:"not null;size:255"`
+	RoleID           int        `gorm:"not null"`
+	Role             UserRole   `gorm:"foreignKey:RoleID"`
+	BirthDate        dtype.Date `gorm:"type:date;not null"`
+	Gender           string     `gorm:"size:6;check:gender IN ('male','female')"`
+	Village          string     `gorm:"not null;size:100"`
+	Subdistrict      string     `gorm:"not null;size:100"`
+	City             string     `gorm:"not null;size:100"`
+	Province         string     `gorm:"not null;size:100"`
+	AddressDetail    string     `gorm:"not null;size:255"`
+	Photo            string     `gorm:"size:255"`
+	CompletedProfile bool       `gorm:"not null;default:false"`
+	CreatedAt        time.Time  `gorm:"autoCreateTime"`
+	UpdatedAt        time.Time  `gorm:"autoUpdateTime"`
 }
 
 type UserRole struct {
