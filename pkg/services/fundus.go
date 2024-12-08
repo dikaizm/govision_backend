@@ -180,7 +180,7 @@ func (u *FundusService) ViewFundusHistory(userID string) ([]*domain.Fundus, erro
 		return nil, errors.New("failed to find patient")
 	}
 
-	if patient == nil {
+	if patient != nil {
 		fundusList, err = u.fundusRepo.FindAllByPatient(patient.ID)
 		if err != nil {
 			return nil, errors.New("failed to find fundus records")
