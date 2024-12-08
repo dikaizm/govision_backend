@@ -25,6 +25,11 @@ func UserRoutes(router *mux.Router, controller route_intf.Controllers, secretKey
 		middleware.Authentication(secretKey, http.HandlerFunc(controller.User.ViewDoctorProfile)),
 	).Methods("GET")
 
+	router.Handle(
+		"/user",
+		middleware.Authentication(secretKey, http.HandlerFunc(controller.User.View)),
+	).Methods("GET")
+
 	// ===================== Doctor =====================
 	// Doctors for appointment booking
 

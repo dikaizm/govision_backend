@@ -1,6 +1,10 @@
 package response
 
-import "github.com/dikaizm/govision_backend/pkg/domain"
+import (
+	"time"
+
+	"github.com/dikaizm/govision_backend/pkg/domain"
+)
 
 type (
 	Fundus struct {
@@ -27,12 +31,12 @@ type (
 	}
 
 	FundusFeedback struct {
-		ID           int64  `json:"id"`
-		DoctorUserID string `json:"doctor_user_id"`
-		DoctorName   string `json:"doctor_name"`
-		Notes        string `json:"notes"`
-		CreatedAt    string `json:"created_at"`
-		UpdatedAt    string `json:"updated_at,omitempty"`
+		ID           int64     `json:"id"`
+		DoctorUserID string    `json:"doctor_user_id"`
+		DoctorName   string    `json:"doctor_name"`
+		Notes        string    `json:"notes"`
+		CreatedAt    time.Time `json:"created_at"`
+		UpdatedAt    time.Time `json:"updated_at,omitempty"`
 	}
 
 	DetectFundusImage struct {
@@ -41,18 +45,18 @@ type (
 		VerifyStatus     string           `json:"verify_status"`
 		Verifier         FundusVerifier   `json:"verifier"`
 		PredictedDisease string           `json:"predicted_disease"`
-		CreatedAt        string           `json:"created_at"`
-		UpdatedAt        string           `json:"updated_at,omitempty"`
+		CreatedAt        time.Time        `json:"created_at"`
+		UpdatedAt        time.Time        `json:"updated_at,omitempty"`
 		Feedbacks        []FundusFeedback `json:"feedbacks,omitempty"`
 	}
 
 	FundusHistory struct {
-		ID               int64  `json:"id"`
-		ImageBase64      string `json:"image_base64"`
-		VerifyStatus     string `json:"verify_status"`
-		PredictedDisease string `json:"predicted_disease"`
-		CreatedAt        string `json:"created_at"`
-		UpdatedAt        string `json:"updated_at,omitempty"`
+		ID               int64     `json:"id"`
+		ImageBase64      string    `json:"image_base64"`
+		VerifyStatus     string    `json:"verify_status"`
+		PredictedDisease string    `json:"predicted_disease"`
+		CreatedAt        time.Time `json:"created_at"`
+		UpdatedAt        time.Time `json:"updated_at,omitempty"`
 	}
 
 	ViewFundusHistory struct {
@@ -60,8 +64,8 @@ type (
 		ImageUrl         string           `json:"image_url"`
 		VerifyStatus     string           `json:"verify_status"`
 		PredictedDisease string           `json:"predicted_disease"`
-		CreatedAt        string           `json:"created_at"`
-		UpdatedAt        string           `json:"updated_at,omitempty"`
+		CreatedAt        time.Time        `json:"created_at"`
+		UpdatedAt        time.Time        `json:"updated_at,omitempty"`
 		Feedbacks        []FundusFeedback `json:"feedbacks"`
 	}
 )

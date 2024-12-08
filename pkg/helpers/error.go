@@ -61,3 +61,10 @@ func FailedValidation(w http.ResponseWriter, err error) {
 		Error:   GetValidationErrors(err),
 	}, http.StatusBadRequest)
 }
+
+func FailedGetTimezone(w http.ResponseWriter) {
+	SendResponse(w, response.Response{
+		Status:  "error",
+		Message: "Failed to get timezone",
+	}, http.StatusInternalServerError)
+}

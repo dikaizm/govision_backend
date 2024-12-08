@@ -25,7 +25,7 @@ func (r *DbUserRepository) Create(user *domain.User) (*string, error) {
 
 func (r *DbUserRepository) FindByID(id string) (*domain.User, error) {
 	var user domain.User
-	if err := r.DB.Preload("Role").First(&user, id).Error; err != nil {
+	if err := r.DB.Preload("Role").Where("id = ?", id).First(&user).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, nil
 		}

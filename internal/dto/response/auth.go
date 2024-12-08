@@ -16,6 +16,7 @@ type (
 		Name        string `json:"name"`
 		Role        string `json:"role"`
 		Email       string `json:"email"`
+		Photo       string `json:"photo"`
 		AccessToken string `json:"access_token"`
 	}
 )

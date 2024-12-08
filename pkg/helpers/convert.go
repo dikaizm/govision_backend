@@ -16,6 +16,14 @@ func StringToInt64(s string) (*int64, error) {
 	return &num, nil
 }
 
+func StringToInt(s string) (int, error) {
+	num, err := strconv.Atoi(s)
+	if err != nil {
+		return 0, err
+	}
+	return num, nil
+}
+
 func GetDaysOfWeek(start, end time.Time) ([]int, error) {
 	daysOfWeekMap := make(map[int]bool)
 	var daysOfWeek []int

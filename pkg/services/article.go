@@ -33,8 +33,8 @@ func (s *ArticleService) Create(p *request.CreateArticle) error {
 	return nil
 }
 
-func (s *ArticleService) FindAll() ([]*domain.Article, error) {
-	articles, err := s.articleRepo.FindAll()
+func (s *ArticleService) FindAll(filter *request.FilterGetArticle) ([]*domain.Article, error) {
+	articles, err := s.articleRepo.FindAll(filter)
 	if err != nil {
 		return nil, err
 	}

@@ -151,11 +151,7 @@ func (u *FundusService) DetectImage(p *request.DetectFundusImage) (res *response
 		VerifyStatus:     newFundus.VerifyStatus,
 		PredictedDisease: newFundus.PredictedDisease,
 		ImageBase64:      mlResponse.Data.CroppedImage,
-		CreatedAt:        newFundus.CreatedAt.Format("2006-01-02 15:04:05"),
-	}
-
-	if err != nil {
-		return nil, err
+		CreatedAt:        newFundus.CreatedAt,
 	}
 
 	return res, nil

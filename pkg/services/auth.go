@@ -137,6 +137,7 @@ func (u *AuthService) Login(p *request.Login) (*response.Login, error) {
 		Name:        user.Name,
 		Email:       user.Email,
 		Role:        user.Role.RoleName,
+		Photo:       user.Photo,
 		AccessToken: resultJWT.Token,
 	}, nil
 }

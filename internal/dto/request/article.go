@@ -6,3 +6,8 @@ type CreateArticle struct {
 	Image    string `json:"image" validate:"required"`
 	AuthorID string
 }
+
+type FilterGetArticle struct {
+	SizeParam string `schema:"size"`
+	Size      int
+}

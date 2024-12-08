@@ -8,7 +8,7 @@ import (
 type ArticleRepository interface {
 	Create(article *domain.Article) error
 	CreateBulk(articles []*domain.Article) error
-	FindAll() ([]*domain.Article, error)
+	FindAll(filter *request.FilterGetArticle) ([]*domain.Article, error)
 	FindByID(id string) (*domain.Article, error)
 	Update(article *domain.Article) error
 }

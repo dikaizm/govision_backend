@@ -22,6 +22,39 @@ func NewUserController(userService service_intf.UserService, authService service
 	}
 }
 
+func (c *UserController) View(w http.ResponseWriter, r *http.Request) {
+	var userResponse response.GetUser
+
+	currentUser, err := helpers.GetCurrentUser(r)
+	if err != nil {
+		helpers.FailedGetCurrentUser(w, err)
+		return
+	}
+
+	user, err := c.userService.Get(currentUser.ID)
+	if err != nil {
+		helpers.SendResponse(w, response.Response{
+			Status: "error",
+			Error:  err.Error(),
+		}, http.StatusInternalServerError)
+		return
+	}
+
+	userResponse = response.GetUser{
+		UserID: user.ID,
+		Name:   user.Name,
+		Email:  user.Email,
+		Role:   user.Role.RoleName,
+		Photo:  user.Photo,
+	}
+
+	helpers.SendResponse(w, response.Response{
+		Status:  "success",
+		Message: "Fetch user",
+		Data:    userResponse,
+	}, http.StatusOK)
+}
+
 func (c *UserController) ViewPatientProfile(w http.ResponseWriter, r *http.Request) {
 	currentUser, err := helpers.GetCurrentUser(r)
 	if err != nil {

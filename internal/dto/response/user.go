@@ -38,3 +38,11 @@ type (
 		Role string `json:"role"`
 	}
 )
+
+type GetUser struct {
+	UserID string `json:"user_id"`
+	Name   string `json:"name"`
+	Role   string `json:"role"`
+	Email  string `json:"email"`
+	Photo  string `json:"photo"`
+}

@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/dikaizm/govision_backend/internal/dto/request"
 	"github.com/dikaizm/govision_backend/internal/dto/response"
@@ -86,6 +87,17 @@ func (c *FundusController) DetectFundusImage(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	// Load the Asia/Jakarta timezone
+	loc, err := time.LoadLocation("Asia/Jakarta")
+	if err != nil {
+		helpers.FailedGetTimezone(w)
+		return
+	}
+
+	// Ensure CreatedAt is in Asia/Jakarta timezone
+	newFundus.CreatedAt = newFundus.CreatedAt.In(loc)
+	newFundus.UpdatedAt = newFundus.UpdatedAt.In(loc)
+
 	res := response.Response{
 		Status:  "success",
 		Message: "Detect fundus success",
@@ -117,6 +129,12 @@ func (c *FundusController) ViewFundusHistory(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	loc, err := time.LoadLocation("Asia/Jakarta")
+	if err != nil {
+		helpers.FailedGetTimezone(w)
+		return
+	}
+
 	for _, f := range fundus {
 		pathArray := strings.Split(f.ImgURL, "/")
 		trimmedPath := pathArray[len(pathArray)-1]
@@ -126,8 +144,8 @@ func (c *FundusController) ViewFundusHistory(w http.ResponseWriter, r *http.Requ
 			ImageUrl:         trimmedPath,
 			VerifyStatus:     f.VerifyStatus,
 			PredictedDisease: f.PredictedDisease,
-			CreatedAt:        f.CreatedAt.Format("2006-01-02 15:04:05"),
-			UpdatedAt:        f.UpdatedAt.Format("2006-01-02 15:04:05"),
+			CreatedAt:        f.CreatedAt.In(loc),
+			UpdatedAt:        f.UpdatedAt.In(loc),
 			Feedbacks:        []response.FundusFeedback{},
 		})
 	}
@@ -164,13 +182,19 @@ func (c *FundusController) ViewFundus(w http.ResponseWriter, r *http.Request) {
 	pathArray := strings.Split(fundus.ImgURL, "/")
 	trimmedPath := pathArray[len(pathArray)-1]
 
+	loc, err := time.LoadLocation("Asia/Jakarta")
+	if err != nil {
+		helpers.FailedGetTimezone(w)
+		return
+	}
+
 	fundusResponse = &response.ViewFundusHistory{
 		ID:               fundus.ID,
 		ImageUrl:         trimmedPath,
 		VerifyStatus:     fundus.VerifyStatus,
 		PredictedDisease: fundus.PredictedDisease,
-		CreatedAt:        fundus.CreatedAt.Format("2006-01-02 15:04:05"),
-		UpdatedAt:        fundus.UpdatedAt.Format("2006-01-02 15:04:05"),
+		CreatedAt:        fundus.CreatedAt.In(loc),
+		UpdatedAt:        fundus.UpdatedAt.In(loc),
 		Feedbacks:        []response.FundusFeedback{},
 	}
 
@@ -181,8 +205,8 @@ func (c *FundusController) ViewFundus(w http.ResponseWriter, r *http.Request) {
 				DoctorUserID: f.Doctor.User.ID,
 				DoctorName:   f.Doctor.User.Name,
 				Notes:        f.Notes,
-				CreatedAt:    f.CreatedAt.Format("2006-01-02 15:04:05"),
-				UpdatedAt:    f.UpdatedAt.Format("2006-01-02 15:04:05"),
+				CreatedAt:    f.CreatedAt.In(loc),
+				UpdatedAt:    f.UpdatedAt.In(loc),
 			})
 		}
 	}

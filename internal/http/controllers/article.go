@@ -70,8 +70,32 @@ func (c *ArticleController) Create(w http.ResponseWriter, r *http.Request) {
 
 func (c *ArticleController) ViewAll(w http.ResponseWriter, r *http.Request) {
 	var articleResponse []response.GetArticle
+	var err error
 
-	articles, err := c.articleService.FindAll()
+	// Query params
+	var filter request.FilterGetArticle
+	filter.SizeParam = r.URL.Query().Get("size")
+	if filter.SizeParam != "" {
+		// Must be a number
+		if err := validate.Var(filter.SizeParam, "numeric"); err != nil {
+			helpers.SendResponse(w, response.Response{
+				Status: "error",
+				Error:  err.Error(),
+			}, http.StatusBadRequest)
+			return
+		}
+
+		filter.Size, err = helpers.StringToInt(filter.SizeParam)
+		if err != nil {
+			helpers.SendResponse(w, response.Response{
+				Status: "error",
+				Error:  err.Error(),
+			}, http.StatusBadRequest)
+			return
+		}
+	}
+
+	articles, err := c.articleService.FindAll(&filter)
 	if err != nil {
 		helpers.SendResponse(w, response.Response{
 			Status: "error",

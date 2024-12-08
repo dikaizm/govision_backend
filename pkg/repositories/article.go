@@ -1,6 +1,9 @@
 package repositories
 
 import (
+	"fmt"
+
+	"github.com/dikaizm/govision_backend/internal/dto/request"
 	"github.com/dikaizm/govision_backend/pkg/domain"
 	repo_intf "github.com/dikaizm/govision_backend/pkg/repositories/interfaces"
 	"gorm.io/gorm"
@@ -22,11 +25,16 @@ func (r *DbArticleRepository) Create(article *domain.Article) error {
 	return nil
 }
 
-func (r *DbArticleRepository) FindAll() ([]*domain.Article, error) {
+func (r *DbArticleRepository) FindAll(filter *request.FilterGetArticle) ([]*domain.Article, error) {
 	var articles []*domain.Article
+	query := r.DB
 
-	if err := r.DB.Order("created_at desc").Find(&articles).Error; err != nil {
-		return nil, err
+	if filter.Size > 0 {
+		query = query.Limit(filter.Size)
+	}
+
+	if err := query.Order("created_at desc").Find(&articles).Error; err != nil {
+		return nil, fmt.Errorf("failed to fetch articles: %w", err)
 	}
 
 	return articles, nil

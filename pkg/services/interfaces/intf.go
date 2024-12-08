@@ -17,7 +17,7 @@ type AuthService interface {
 type ArticleService interface {
 	Create(p *request.CreateArticle) error
 	CreateBulk(p []*request.CreateArticle) error
-	FindAll() ([]*domain.Article, error)
+	FindAll(filter *request.FilterGetArticle) ([]*domain.Article, error)
 	FindByID(id string) (*domain.Article, error)
 }
 
@@ -40,6 +40,7 @@ type FundusService interface {
 }
 
 type UserService interface {
+	Get(userID string) (*domain.User, error)
 	GetProfilePatient(userID string) (*response.GetProfilePatient, error)
 	GetProfileDoctor(userID string) (*response.GetProfile, error)
 	UpdateProfile() error

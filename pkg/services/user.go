@@ -2,6 +2,7 @@ package services
 
 import (
 	"github.com/dikaizm/govision_backend/internal/dto/response"
+	"github.com/dikaizm/govision_backend/pkg/domain"
 	repo_intf "github.com/dikaizm/govision_backend/pkg/repositories/interfaces"
 	service_intf "github.com/dikaizm/govision_backend/pkg/services/interfaces"
 )
@@ -14,6 +15,15 @@ func NewUserService(userRepo repo_intf.UserRepository) service_intf.UserService 
 	return &UserService{
 		userRepo: userRepo,
 	}
+}
+
+func (s *UserService) Get(userID string) (*domain.User, error) {
+	user, err := s.userRepo.FindByID(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
 
 func (s *UserService) GetProfilePatient(userID string) (*response.GetProfilePatient, error) {
