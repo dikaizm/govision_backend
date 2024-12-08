@@ -100,6 +100,8 @@ func detectFundusImageAPI(mlApi string, mlApiKey string, imageBlob string) (*Api
 }
 
 func (u *FundusService) DetectImage(p *request.DetectFundusImage) (res *response.DetectFundusImage, err error) {
+	var imagePath string = ""
+
 	patient, err := u.userRepo.FindPatientProfileByID(p.UserID)
 	if err != nil {
 		return nil, err
@@ -111,10 +113,12 @@ func (u *FundusService) DetectImage(p *request.DetectFundusImage) (res *response
 		return nil, err
 	}
 
-	// Store image in VM
-	imagePath, err := helpers.StoreImage(mlResponse.Data.CroppedImage, "fundus")
-	if err != nil {
-		return nil, errors.New("failed to store image")
+	if (mlResponse.Data.PredictedClass != "") || (mlResponse.Data.CroppedImage != "") {
+		// Store image in VM
+		imagePath, err = helpers.StoreImage(mlResponse.Data.CroppedImage, "fundus")
+		if err != nil {
+			return nil, errors.New("failed to store image")
+		}
 	}
 
 	// Map predicted class to domain constant

@@ -69,7 +69,7 @@ func (c *ArticleController) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *ArticleController) ViewAll(w http.ResponseWriter, r *http.Request) {
-	var articleResponse []response.GetArticle
+	var articleResponse []*response.GetArticle
 	var err error
 
 	// Query params
@@ -104,8 +104,10 @@ func (c *ArticleController) ViewAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	articleResponse = []*response.GetArticle{}
+
 	for _, article := range articles {
-		articleResponse = append(articleResponse, response.GetArticle{
+		articleResponse = append(articleResponse, &response.GetArticle{
 			ID:        article.ID,
 			Title:     article.Title,
 			Image:     article.Image,
