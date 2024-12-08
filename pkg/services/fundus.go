@@ -170,14 +170,21 @@ func (u *FundusService) ViewFundus(fundusID int64) (*domain.Fundus, error) {
 }
 
 func (u *FundusService) ViewFundusHistory(userID string) ([]*domain.Fundus, error) {
+	var fundusList []*domain.Fundus
+
 	patient, err := u.userRepo.FindPatientProfileByID(userID)
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, errors.New("failed to find patient")
 	}
 
-	fundusList, err := u.fundusRepo.FindAllByPatient(patient.ID)
-	if err != nil {
-		return nil, errors.New("failed to find fundus records")
+	if patient == nil {
+		fundusList, err = u.fundusRepo.FindAllByPatient(patient.ID)
+		if err != nil {
+			return nil, errors.New("failed to find fundus records")
+		}
 	}
 
 	return fundusList, nil

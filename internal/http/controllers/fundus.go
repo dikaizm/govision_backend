@@ -108,7 +108,7 @@ func (c *FundusController) DetectFundusImage(w http.ResponseWriter, r *http.Requ
 }
 
 func (c *FundusController) ViewFundusHistory(w http.ResponseWriter, r *http.Request) {
-	var fundusResponse []*response.ViewFundusHistory
+	var fundusResponse []response.ViewFundusHistory
 
 	user, err := helpers.GetCurrentUser(r)
 	if err != nil {
@@ -135,11 +135,13 @@ func (c *FundusController) ViewFundusHistory(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	fundusResponse = []response.ViewFundusHistory{}
+
 	for _, f := range fundus {
 		pathArray := strings.Split(f.ImgURL, "/")
 		trimmedPath := pathArray[len(pathArray)-1]
 
-		fundusResponse = append(fundusResponse, &response.ViewFundusHistory{
+		fundusResponse = append(fundusResponse, response.ViewFundusHistory{
 			ID:               f.ID,
 			ImageUrl:         trimmedPath,
 			VerifyStatus:     f.VerifyStatus,

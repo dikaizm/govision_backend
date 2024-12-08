@@ -37,9 +37,6 @@ func (r *DbUserRepository) FindByID(id string) (*domain.User, error) {
 func (r *DbUserRepository) FindPatientProfileByID(id string) (*domain.UserPatient, error) {
 	var profile domain.UserPatient
 	if err := r.DB.Where("user_id = ?", id).First(&profile).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return nil, nil
-		}
 		return nil, err
 	}
 	return &profile, nil
