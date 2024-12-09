@@ -148,13 +148,31 @@ func (u *AuthService) Login(p *request.Login) (*response.Login, error) {
 }
 
 func (u *AuthService) RegisterAsDoctor(userID string, p *request.RegisterDoctor) error {
+	user, err := u.userRepo.FindByID(userID)
+	if err != nil {
+		return err
+	}
+
+	if user == nil {
+		return errors.New("user not found")
+	}
+
+	if user.Role.RoleName != "doctor" {
+		return errors.New("user is not a doctor")
+	}
+
 	profile := &domain.UserDoctor{
 		UserID:         userID,
 		Specialization: p.Specialization,
 		StrNo:          p.StrNo,
 		BioDesc:        p.BioDesc,
-		WorkYears:      0,
-		Rating:         0,
+		WorkYears:      p.WorkYears,
+		Rating:         p.Rating,
+		TotalPatient:   p.TotalPatient,
+		City:           p.City,
+		Province:       p.Province,
+		Institution:    p.Institution,
+		IsVerified:     p.IsVerified,
 	}
 
 	practices := []*domain.DoctorExperience{}
@@ -165,6 +183,7 @@ func (u *AuthService) RegisterAsDoctor(userID string, p *request.RegisterDoctor)
 			City:            pr.City,
 			Province:        pr.Province,
 			InstitutionName: pr.InstitutionName,
+			AddressDetail:   pr.AddressDetail,
 			StartDate:       pr.StartDate,
 			EndDate:         pr.EndDate,
 		}
@@ -183,7 +202,7 @@ func (u *AuthService) RegisterAsDoctor(userID string, p *request.RegisterDoctor)
 		educations = append(educations, education)
 	}
 
-	_, err := u.userRepo.CreateDoctorProfile(profile, practices, educations)
+	_, err = u.userRepo.CreateDoctorProfile(profile, practices, educations)
 	if err != nil {
 		return err
 	}
@@ -192,6 +211,19 @@ func (u *AuthService) RegisterAsDoctor(userID string, p *request.RegisterDoctor)
 }
 
 func (u *AuthService) RegisterAsPatient(userID string, p *request.RegisterPatient) error {
+	user, err := u.userRepo.FindByID(userID)
+	if err != nil {
+		return err
+	}
+
+	if user == nil {
+		return errors.New("user not found")
+	}
+
+	if user.Role.RoleName != "patient" {
+		return errors.New("user is not a patient")
+	}
+
 	profile := &domain.UserPatient{
 		UserID:          userID,
 		DiabetesHistory: p.DiabetesHistory,
@@ -199,7 +231,7 @@ func (u *AuthService) RegisterAsPatient(userID string, p *request.RegisterPatien
 		DiagnosisDate:   p.DiagnosisDate,
 	}
 
-	_, err := u.userRepo.CreatePatientProfile(profile)
+	_, err = u.userRepo.CreatePatientProfile(profile)
 	if err != nil {
 		return err
 	}

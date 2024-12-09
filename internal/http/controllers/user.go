@@ -112,6 +112,16 @@ func (c *UserController) CreatePatientProfile(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	err := validate.Struct(req)
+	if err != nil {
+		helpers.SendResponse(w, response.Response{
+			Status:  "error",
+			Message: "Validation error",
+			Error:   helpers.GetValidationErrors(err),
+		}, http.StatusBadRequest)
+		return
+	}
+
 	currentUser, err := helpers.GetCurrentUser(r)
 	if err != nil {
 		helpers.FailedGetCurrentUser(w, err)
@@ -130,5 +140,47 @@ func (c *UserController) CreatePatientProfile(w http.ResponseWriter, r *http.Req
 	helpers.SendResponse(w, response.Response{
 		Status:  "success",
 		Message: "Patient profile created successfully",
+	}, http.StatusCreated)
+}
+
+func (c *UserController) CreateDoctorProfile(w http.ResponseWriter, r *http.Request) {
+	req := &request.RegisterDoctor{}
+	if err := helpers.JsonBodyDecoder(r.Body, &req); err != nil {
+		helpers.SendResponse(w, response.Response{
+			Status:  "error",
+			Message: "Failed to parse request body",
+			Error:   err.Error(),
+		}, http.StatusBadRequest)
+		return
+	}
+
+	err := validate.Struct(req)
+	if err != nil {
+		helpers.SendResponse(w, response.Response{
+			Status:  "error",
+			Message: "Validation error",
+			Error:   helpers.GetValidationErrors(err),
+		}, http.StatusBadRequest)
+		return
+	}
+
+	currentUser, err := helpers.GetCurrentUser(r)
+	if err != nil {
+		helpers.FailedGetCurrentUser(w, err)
+		return
+	}
+
+	if err := c.authService.RegisterAsDoctor(currentUser.ID, req); err != nil {
+		helpers.SendResponse(w, response.Response{
+			Status:  "error",
+			Message: "Failed to create doctor profile",
+			Error:   err.Error(),
+		}, http.StatusBadRequest)
+		return
+	}
+
+	helpers.SendResponse(w, response.Response{
+		Status:  "success",
+		Message: "Doctor profile created successfully",
 	}, http.StatusCreated)
 }

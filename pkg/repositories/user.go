@@ -87,11 +87,6 @@ func (r *DbUserRepository) CreateDoctorProfile(profile *domain.UserDoctor, pract
 		}
 	}
 
-	if err := tx.Update("work_years", profile.WorkYears).Error; err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-
 	for _, education := range educations {
 		education.ProfileID = profile.ID
 		if err := tx.Create(education).Error; err != nil {

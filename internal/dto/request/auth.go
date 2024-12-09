@@ -47,6 +47,12 @@ type (
 		StrNo          string            `json:"str_no" validate:"required,min=3,max=100"`
 		BioDesc        string            `json:"bio_desc" validate:"required,min=3,max=255"`
 		WorkYears      int               `json:"work_years" validate:"required"`
+		Institution    string            `json:"institution" validate:"required,min=3,max=100"`
+		IsVerified     bool              `json:"is_verified"`
+		Rating         float64           `json:"rating"`
+		TotalPatient   int               `json:"total_patient"`
+		City           string            `json:"city" validate:"required"`
+		Province       string            `json:"province" validate:"required"`
 		Educations     []DoctorEducation `json:"educations" validate:"required"`
 		Practices      []DoctorPractice  `json:"practices" validate:"required"`
 	}

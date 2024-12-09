@@ -16,6 +16,11 @@ func UserRoutes(router *mux.Router, controller route_intf.Controllers, secretKey
 	).Methods("POST")
 
 	router.Handle(
+		"/user/profile/doctor",
+		middleware.Authentication(secretKey, http.HandlerFunc(controller.User.CreateDoctorProfile)),
+	).Methods("POST")
+
+	router.Handle(
 		"/user/profile/patient",
 		middleware.Authentication(secretKey, http.HandlerFunc(controller.User.ViewPatientProfile)),
 	).Methods("GET")
