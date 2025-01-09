@@ -1,5 +1,11 @@
 # optiguard_backend
 
+## How to Run
+
+```bash
+go run cmd/main.go
+```
+
 
 ```bash
 project/
